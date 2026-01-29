@@ -119,3 +119,11 @@
   left: 0;
   color: var(--color-accent);
 }
+
+/* Mobile responsive layout */
+@media (max-width: 600px) {
+  .calculator__inputs {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}

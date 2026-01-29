@@ -45,6 +45,7 @@ export function InputField({ label, value, unit, onChange, min = 0, max = 9999, 
           step={step}
           inputMode="decimal"
         />
+        <span className="input-field__unit">{unit}</span>
         <button
           type="button"
           className="input-field__btn input-field__btn--plus"
@@ -53,7 +54,6 @@ export function InputField({ label, value, unit, onChange, min = 0, max = 9999, 
         >
           +
         </button>
-        <span className="input-field__unit">{unit}</span>
       </div>
     </div>
   );
