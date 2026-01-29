@@ -1,0 +1,36 @@
+.strength-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.strength-slider__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.strength-slider__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.strength-slider__value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.strength-slider__input {
+  margin: 4px 0;
+}
+
+.strength-slider__labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+}
