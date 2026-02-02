@@ -128,6 +128,18 @@ export function useBrewHistory() {
     setHistory(initialHistory);
   };
 
+  const clearAllData = () => {
+    // Clear brew history
+    setHistory(initialHistory);
+
+    // Clear other localStorage keys used by the app
+    localStorage.removeItem('jirbrewstack-method');
+    localStorage.removeItem('jirbrewstack-strength');
+    localStorage.removeItem('jirbrewstack-roast');
+    localStorage.removeItem('jirbrewstack-bean');
+    localStorage.removeItem('jirbrewstack-values');
+  };
+
   return {
     brews: history.brews,
     savedRecipes: history.savedRecipes,
@@ -137,5 +149,6 @@ export function useBrewHistory() {
     deleteRecipe,
     insights: getInsights(),
     clearHistory,
+    clearAllData,
   };
 }

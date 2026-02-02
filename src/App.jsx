@@ -31,6 +31,7 @@ function App() {
     saveRecipe,
     loadRecipe,
     deleteRecipe,
+    clearAllData,
   } = useBrewHistory();
 
   const handleStartBrew = () => {
@@ -151,6 +152,7 @@ function App() {
             insights={insights}
             onLoadRecipe={handleLoadRecipe}
             onDeleteRecipe={deleteRecipe}
+            onClearAllData={clearAllData}
             onClose={handleBackToCalculator}
           />
         )}

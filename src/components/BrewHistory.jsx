@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { recipes, strengthLabels } from '../data/recipes';
 import './BrewHistory.css';
 
@@ -7,8 +8,17 @@ export function BrewHistory({
   insights,
   onLoadRecipe,
   onDeleteRecipe,
+  onClearAllData,
   onClose,
 }) {
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  const handleReset = () => {
+    if (onClearAllData) {
+      onClearAllData();
+    }
+    setShowResetConfirm(false);
+  };
   const formatDate = (isoString) => {
     const date = new Date(isoString);
     const now = new Date();
@@ -161,6 +171,45 @@ export function BrewHistory({
           </div>
         )}
       </div>
+
+      <div className="history__settings">
+        <h3 className="history__section-title">Settings</h3>
+        <button
+          className="history__reset-btn"
+          onClick={() => setShowResetConfirm(true)}
+        >
+          🗑️ Reset All Data
+        </button>
+      </div>
+
+      {showResetConfirm && (
+        <div className="history__modal-overlay">
+          <div className="history__modal">
+            <h3 className="history__modal-title">Reset All Data?</h3>
+            <p className="history__modal-text">This will permanently delete:</p>
+            <ul className="history__modal-list">
+              <li>{brews.length} brew records</li>
+              <li>{savedRecipes.length} saved recipes</li>
+              <li>All your preferences</li>
+            </ul>
+            <p className="history__modal-warning">This cannot be undone.</p>
+            <div className="history__modal-actions">
+              <button
+                className="history__modal-btn"
+                onClick={() => setShowResetConfirm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="history__modal-btn history__modal-btn--danger"
+                onClick={handleReset}
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
