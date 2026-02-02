@@ -4,7 +4,7 @@ import { useTimer } from '../hooks/useTimer';
 import { recipes, getAdjustedTemperature } from '../data/recipes';
 import './Timer.css';
 
-export function Timer({ method, values, strength, roastLevel, onBack }) {
+export function Timer({ method, values, strength, roastLevel, onBack, onRateBrew }) {
   const recipe = recipes[method];
   const baseTemp = recipe.temperatures[strength];
   const temp = getAdjustedTemperature(baseTemp, roastLevel);
@@ -93,18 +93,37 @@ export function Timer({ method, values, strength, roastLevel, onBack }) {
       </div>
 
       <div className="timer__controls">
-        <button
-          className="timer__control-btn timer__control-btn--secondary"
-          onClick={handleReset}
-        >
-          Reset
-        </button>
-        <button
-          className={`timer__control-btn timer__control-btn--primary ${isComplete ? 'timer__control-btn--complete' : ''}`}
-          onClick={isComplete ? handleBack : toggle}
-        >
-          {isComplete ? 'Done' : isRunning ? 'Pause' : 'Start'}
-        </button>
+        {isComplete ? (
+          <>
+            <button
+              className="timer__control-btn timer__control-btn--secondary"
+              onClick={handleBack}
+            >
+              New Brew
+            </button>
+            <button
+              className="timer__control-btn timer__control-btn--primary timer__control-btn--complete"
+              onClick={onRateBrew}
+            >
+              Rate This Brew
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className="timer__control-btn timer__control-btn--secondary"
+              onClick={handleReset}
+            >
+              Reset
+            </button>
+            <button
+              className="timer__control-btn timer__control-btn--primary"
+              onClick={toggle}
+            >
+              {isRunning ? 'Pause' : 'Start'}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

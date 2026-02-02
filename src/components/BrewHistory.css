@@ -1,0 +1,209 @@
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.history__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.history__back-btn {
+  padding: 8px 12px;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  min-height: 44px;
+}
+
+.history__back-btn:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.history__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.history__section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+}
+
+/* Insights */
+.history__insights-card {
+  padding: 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.history__insight-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.history__insight-value {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.history__insight-divider {
+  color: var(--color-text-muted);
+}
+
+.history__insight-item {
+  display: flex;
+  gap: 6px;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+.history__insight-label {
+  color: var(--color-text-muted);
+}
+
+.history__insight-text {
+  color: var(--color-text);
+}
+
+.history__star {
+  color: var(--color-border);
+  font-size: 0.875rem;
+}
+
+.history__star--filled {
+  color: var(--color-warning);
+}
+
+/* Lists */
+.history__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Saved Recipes */
+.history__recipe-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.history__recipe-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.history__recipe-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history__recipe-details {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.history__recipe-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+}
+
+.history__recipe-btn {
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  min-height: 36px;
+}
+
+.history__recipe-btn--load {
+  background: var(--color-primary);
+  color: white;
+}
+
+.history__recipe-btn--load:hover {
+  background: var(--color-accent);
+}
+
+.history__recipe-btn--delete {
+  width: 36px;
+  padding: 8px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.history__recipe-btn--delete:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+/* Brew Cards */
+.history__brew-card {
+  padding: 14px 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.history__brew-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.history__brew-date {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.history__brew-rating {
+  display: flex;
+  gap: 1px;
+}
+
+.history__brew-details {
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
+.history__empty {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: 24px 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  line-height: 1.5;
+}

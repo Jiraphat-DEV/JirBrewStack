@@ -350,3 +350,19 @@ export function getGrindClicks(method, cups = 1) {
   }
   return { clicks: grindInfo.clicks, note: grindInfo.note };
 }
+
+// Grind adjustment helpers for dial-in suggestions
+export const GRIND_ADJUSTMENTS = {
+  finer: { clicks: -2, description: 'Grind 2 clicks finer' },
+  slightlyFiner: { clicks: -1, description: 'Grind 1 click finer' },
+  coarser: { clicks: 2, description: 'Grind 2 clicks coarser' },
+  slightlyCoarser: { clicks: 1, description: 'Grind 1 click coarser' },
+};
+
+// Temperature adjustment helpers for dial-in suggestions
+export const TEMP_ADJUSTMENTS = {
+  hotter: { amount: 3, description: '+3°C hotter water' },
+  slightlyHotter: { amount: 2, description: '+2°C hotter water' },
+  cooler: { amount: -3, description: '-3°C cooler water' },
+  slightlyCooler: { amount: -2, description: '-2°C cooler water' },
+};

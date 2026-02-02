@@ -1,0 +1,192 @@
+.dial-in {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dial-in__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dial-in__back-btn {
+  padding: 8px 12px;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  min-height: 44px;
+}
+
+.dial-in__back-btn:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.dial-in__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.dial-in__intro {
+  font-size: 1rem;
+  color: var(--color-text);
+  text-align: center;
+  margin: 0;
+}
+
+.dial-in__feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dial-in__sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dial-in__btn {
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  min-height: 56px;
+}
+
+.dial-in__btn--primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.dial-in__btn--primary:hover {
+  background: var(--color-accent);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.dial-in__btn--secondary {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.dial-in__btn--secondary:hover {
+  background: var(--color-text-muted);
+  color: white;
+}
+
+/* Suggestions View */
+.dial-in__suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dial-in__extraction-card {
+  padding: 20px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.dial-in__extraction-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.dial-in__extraction-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 8px 0;
+}
+
+.dial-in__extraction-desc {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.dial-in__suggestions-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 8px 0 0 0;
+}
+
+.dial-in__suggestion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dial-in__suggestion-card {
+  padding: 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.dial-in__suggestion-header {
+  margin-bottom: 8px;
+}
+
+.dial-in__suggestion-type {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dial-in__suggestion-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.dial-in__suggestion-detail {
+  font-size: 0.875rem;
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.dial-in__suggestion-reason {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.dial-in__suggestion-why {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.dial-in__no-suggestions {
+  font-size: 1rem;
+  color: var(--color-text);
+  text-align: center;
+  padding: 20px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.dial-in__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
