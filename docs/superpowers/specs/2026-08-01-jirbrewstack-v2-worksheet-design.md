@@ -1,4 +1,4 @@
-# JirBrewStack v2 — Worksheet Calculator (Design Spec)
+# JirBrewStack v2 Worksheet Calculator (Design Spec)
 
 วันที่: 2026-08-01
 Branch: `feat/v2-worksheet`
@@ -13,8 +13,8 @@ Branch: `feat/v2-worksheet`
 
 | แหล่ง | สถานะ |
 |---|---|
-| Notion `☕ สูตร AeroPress — คู่มือชง` (`39df3937-0750-8177-aa5a-d1bede3ecb95`) | authoritative สำหรับ AeroPress |
-| Notion `☕ สูตร Delter Press คู่มือชง` (`3aef3937-0750-817e-b5a1-cf891d91f821`) | authoritative สำหรับ Delter |
+| Notion `สูตร AeroPress · คู่มือชง` (`39df3937-0750-8177-aa5a-d1bede3ecb95`) | authoritative สำหรับ AeroPress |
+| Notion `สูตร Delter Press คู่มือชง` (`3aef3937-0750-817e-b5a1-cf891d91f821`) | authoritative สำหรับ Delter |
 | `/Users/jiraphat/temp/coffee_aeropress_research/` | เอกสารที่มาของตัวเลข ใช้อ้างอิงเหตุผล ไม่ใช่ตัวเลขที่ใช้จริง |
 
 ตัวเลขทุกตัวในสเปกนี้ถอดมาจาก Notion ถ้า Notion กับ research folder ขัดกัน ให้ Notion ชนะ **สเปกนี้ต้องมีตัวเลขครบพอที่จะเขียนโค้ดและเทสได้โดยไม่ต้องเปิด Notion**
@@ -37,7 +37,7 @@ Branch: `feat/v2-worksheet`
 - **ไม่รองรับการปรับ dose** ล็อกตาม base ของแต่ละเครื่อง (มีผลกับหน้าแก้รส ดูข้อ 4.7)
 - **ไม่ย้ายข้อมูลเก่าออกจาก localStorage และไม่มีเครื่องมือ export** ตัดสินแล้วว่าทิ้ง ดูหัวข้อถัดไป
 
-### ข้อมูลเก่าใน localStorage — ตัดสินแล้วว่าทิ้ง
+### ข้อมูลเก่าใน localStorage (ตัดสินแล้วว่าทิ้ง)
 
 v1 เก็บประวัติการชง 50 ครั้งหลังสุดกับ savedRecipes ไว้ใน key `coffeecal-brew-history` (ชื่อ key ยังเป็น `coffeecal` เพราะตกค้างจากตอนเปลี่ยนชื่อโปรเจกต์) บวก 5 key `jirbrewstack-*` สำหรับ state ของเครื่องคิดเลข พอ v2 ลบ `useBrewHistory` กับหน้า History ออก ข้อมูลชุดนี้จะยังอยู่บน origin แต่ไม่มีอะไรอ่านมันได้อีก
 
@@ -100,7 +100,7 @@ Data flow เป็นทางเดียว: input 5 ช่อง → `comput
 
 ### ไฟล์ที่เก็บไว้ไม่แก้
 
-`src/hooks/useTimer.js` — เป็น logic นับเวลาล้วน ไม่มีข้อความ ไม่รู้จักกาแฟ **contract ที่มันบังคับไว้ (ยืนยันจากไฟล์จริง)**: `useTimer(steps, totalTime)` หา step ปัจจุบันจาก `step.startTime` แบบสะสม (absolute) โดยหาจุดจบของ step จาก `startTime` ของ step ถัดไป ถ้าเป็น step สุดท้ายใช้ `totalTime` **มันไม่อ่าน `step.duration` เลย** และคืน `isComplete` กับ `formatTime` (รูปแบบ `m:ss`) มาให้
+`src/hooks/useTimer.js`: เป็น logic นับเวลาล้วน ไม่มีข้อความ ไม่รู้จักกาแฟ **contract ที่มันบังคับไว้ (ยืนยันจากไฟล์จริง)**: `useTimer(steps, totalTime)` หา step ปัจจุบันจาก `step.startTime` แบบสะสม (absolute) โดยหาจุดจบของ step จาก `startTime` ของ step ถัดไป ถ้าเป็น step สุดท้ายใช้ `totalTime` **มันไม่อ่าน `step.duration` เลย** และคืน `isComplete` กับ `formatTime` (รูปแบบ `m:ss`) มาให้
 
 `src/main.jsx`, `src/index.css` (design tokens ธีมกาแฟเดิม), `src/App.css`, `vite.config.js`, `firebase.json`, `.firebaserc`, `.github/workflows/deploy.yml`
 
@@ -162,7 +162,7 @@ apply หลัง delta ครบทุกขั้นแต่ก่อนป�
 
 ทั้งดีไซน์ตั้งอยู่บนสมมติฐานว่าเจ้าของจะมาแก้ไฟล์นี้เองบ่อยๆ โดยไม่แตะโค้ด ถ้าเผลอเขียนผิดรูปแล้วผลเพี้ยนเงียบๆ จะเสียจุดขายของทั้งงาน จึงกันไว้สองชั้น
 
-**ชั้นที่ 1 — รับทั้งสองรูปแบบ (normalize)** `computeRecipe` และ `defaultPick` ส่งทุกค่าผ่าน `normalizeRange(v)` ก่อนใช้:
+**ชั้นที่ 1 · รับทั้งสองรูปแบบ (normalize)** `computeRecipe` และ `defaultPick` ส่งทุกค่าผ่าน `normalizeRange(v)` ก่อนใช้:
 
 | เขียนมาแบบ | ผลลัพธ์ |
 |---|---|
@@ -172,7 +172,7 @@ apply หลัง delta ครบทุกขั้นแต่ก่อนป�
 
 แปลว่า `{ steep: 120 }` กับ `{ steep: [120, 120] }` ให้ผลเหมือนกัน ตัดความผิดพลาดที่น่าจะเกิดที่สุดทิ้งไปเลย แทนที่จะไปจับทีหลัง
 
-**ชั้นที่ 2 — เทสวนทั้งไฟล์** เทส 16 เดินทุก node ใน `brewing-rules.js` แล้วตรวจ 3 อย่าง: ทุกค่าของ field ที่เป็นช่วง normalize ได้และ `min <= max` · ไม่มี `NaN` โผล่ที่ไหน · **ทุก key ในทุก patch ต้องอยู่ในชุด field ที่รู้จัก** ข้อสุดท้ายสำคัญที่สุดเพราะพิมพ์ชื่อ field ผิด (`steap` แทน `steep`) จะไม่มีอะไรจับได้เลยด้วยกลไกอื่น — patch นั้นจะถูกเมินเงียบๆ และสูตรจะออกมาเหมือนไม่ได้เลือก process นั้น
+**ชั้นที่ 2 · เทสวนทั้งไฟล์** เทส 16 เดินทุก node ใน `brewing-rules.js` แล้วตรวจ 3 อย่าง: ทุกค่าของ field ที่เป็นช่วง normalize ได้และ `min <= max` · ไม่มี `NaN` โผล่ที่ไหน · **ทุก key ในทุก patch ต้องอยู่ในชุด field ที่รู้จัก** ข้อสุดท้ายสำคัญที่สุดเพราะพิมพ์ชื่อ field ผิด (`steap` แทน `steep`) จะไม่มีอะไรจับได้เลยด้วยกลไกอื่น · patch นั้นจะถูกเมินเงียบๆ และสูตรจะออกมาเหมือนไม่ได้เลือก process นั้น
 
 ชุด field ที่รู้จัก: `temp` · `grind` · `steep` · `preinfusionWait` · `pressSpeed` · `restBetween` · `bypass` · `steepAdd` · `preinfusionAdd` · `pressSpeedAdd` · `tempClamp` · `note`
 
@@ -203,7 +203,7 @@ apply หลัง delta ครบทุกขั้นแต่ก่อนป�
 
 **ไม่มีกรอบ temp ระดับเครื่อง (`tempCap`)** เดิมเคยออกแบบให้มี แต่ไล่ทุก combo แล้วพบว่า AeroPress ได้ temp 82-90 (กรอบ 80-92) และ Delter ได้ 86-93 (กรอบ 85-94) แปลว่ามันไม่มีทางทำงานจาก input ที่เป็นไปได้จริง จึงเป็น dead code และการมีอยู่ยังทำให้ typo ใน `brewing-rules.js` ถูกกลบเงียบๆ แทนที่จะดังออกมา ย้ายไปเป็นเทสแทน (ดูเทส 8) คนละเรื่องกับ `tempClamp` ซึ่งเป็น patch ระดับ origin ที่มีผลจริงและตรวจได้ด้วยเทส 6
 
-### 4.3 ตารางค่า — AeroPress (inverted)
+### 4.3 ตารางค่า AeroPress (inverted)
 
 **Base**
 
@@ -224,41 +224,41 @@ apply หลัง delta ครบทุกขั้นแต่ก่อนป�
 
 | roast | temp | grind | steep |
 |---|---|---|---|
-| `agtron95plus` | — | `[-0.5, -0.5]` | `steepAdd: 15` |
-| `agtron80_95` | — | — | — |
+| `agtron95plus` | - | `[-0.5, -0.5]` | `steepAdd: 15` |
+| `agtron80_95` | - | - | - |
 | `agtron65_80` | `[+2, +2]` | `[+0.5, +1.0]` | ทับเป็น `[105, 135]` |
 
 **ขั้น 2 Process**
 
 | process | temp | grind | steep | note |
 |---|---|---|---|---|
-| `washed` | `[0, 0]` | — | `[105, 105]` | สะอาด เปรี้ยวสดใส เป็น process เดียวที่ข้าม bypass ได้ ถ้าอยากลองให้ชง 18 g / น้ำ 250 g รวดเดียว (1:14) แล้วไม่ต้องเติมน้ำในแก้ว — แอปไม่ได้คำนวณสูตรนั้นให้ ต้องทำเอง |
-| `honey` | `[0, 0]` | — | — | หวานนุ่ม body ดี |
-| `natural` | `[-1, -1]` | — | — | รักษาหวาน/ผลไม้ |
-| `anaerobic` | `[-3, -3]` | — | `[105, 120]` | ละลายเร็ว over ง่าย ขมให้เพิ่ม bypass ก่อน อย่าเพิ่งบดหยาบ |
+| `washed` | `[0, 0]` | - | `[105, 105]` | สะอาด เปรี้ยวสดใส เป็น process เดียวที่ข้าม bypass ได้ ถ้าอยากลองให้ชง 18 g / น้ำ 250 g รวดเดียว (1:14) แล้วไม่ต้องเติมน้ำในแก้ว · แอปไม่ได้คำนวณสูตรนั้นให้ ต้องทำเอง |
+| `honey` | `[0, 0]` | - | - | หวานนุ่ม body ดี |
+| `natural` | `[-1, -1]` | - | - | รักษาหวาน/ผลไม้ |
+| `anaerobic` | `[-3, -3]` | - | `[105, 120]` | ละลายเร็ว over ง่าย ขมให้เพิ่ม bypass ก่อน อย่าเพิ่งบดหยาบ |
 | `cm` | `[-3, -3]` | `[0, +0.5]` | `[105, 120]` | โบ๊ซ/ไวน์ ถ้า over จะออกขม/ยา แนะนำ bypass |
 | `doubleAnaerobic` | `[-6, -3]` | `[0, +0.5]` | `[120, 150]` | cell wall พังมากสุด over ไวสุด bypass จำเป็น |
-| `yeast` | `[-3, -3]` | — | `[105, 120]` | ผลไม้จัด ระวังโบ๊ซ |
-| `barrel` | `[-3, -3]` | — | `[105, 120]` | กลิ่นเหล้าระเหยง่าย คนเบาสุด bypass ช่วยให้กลิ่นเหล้าเด่นแบบไม่ขม |
+| `yeast` | `[-3, -3]` | - | `[105, 120]` | ผลไม้จัด ระวังโบ๊ซ |
+| `barrel` | `[-3, -3]` | - | `[105, 120]` | กลิ่นเหล้าระเหยง่าย คนเบาสุด bypass ช่วยให้กลิ่นเหล้าเด่นแบบไม่ขม |
 
 **ขั้น 3 Altitude**
 
 | altitude | grind | steep |
 |---|---|---|
 | `high` | `[-0.5, -0.5]` | `steepAdd: 15` |
-| `mid` | — | — |
-| `low` | `[+0.5, +0.5]` | — |
+| `mid` | - | - |
+| `low` | `[+0.5, +0.5]` | - |
 
 **ขั้น 4 Origin**
 
 | origin | ปรับ | โทนรส (note) |
 |---|---|---|
-| `ethiopia` | — | ดอกไม้ ซิตรัส เบอร์รี่ ลิ้นจี่ ชา เอา clarity ปลายเย็น |
-| `kenya` | — | เบอร์รี่/แบล็คเคอแรนต์ เปรี้ยวจัด สะอาด รับ extraction ได้นิดเพื่อ body |
-| `colombia` | — | บาลานซ์ คาราเมล ผลไม้แดง ใช้ base |
-| `brazil` | — | ถั่ว ช็อกโกแลต เปรี้ยวต่ำ ให้อภัยง่าย base หรือเย็นนิด |
+| `ethiopia` | - | ดอกไม้ ซิตรัส เบอร์รี่ ลิ้นจี่ ชา เอา clarity ปลายเย็น |
+| `kenya` | - | เบอร์รี่/แบล็คเคอแรนต์ เปรี้ยวจัด สะอาด รับ extraction ได้นิดเพื่อ body |
+| `colombia` | - | บาลานซ์ คาราเมล ผลไม้แดง ใช้ base |
+| `brazil` | - | ถั่ว ช็อกโกแลต เปรี้ยวต่ำ ให้อภัยง่าย base หรือเย็นนิด |
 | `panamaGeisha` | `tempClamp: [85, 87]` · ทับ `bypass: [100, 115]` | มะลิ เบอร์กาม็อต พีช ทรอปิคอล คนเบาสุด bypass เยอะให้จบที่ราว 1:16-1:17 เพื่อ clarity |
-| `thai` | — | หลากหลาย ยึด Process เป็นหลัก |
+| `thai` | - | หลากหลาย ยึด Process เป็นหลัก |
 
 **`panamaGeisha` เป็น clamp ไม่ใช่ทับ** ผลลัพธ์ที่ตรวจแล้วครบทุก process (roast กลาง)
 
@@ -274,7 +274,7 @@ barrel-Geisha ได้ 85 ซึ่งอยู่ในกรอบ 85-87 ต�
 
 bypass `[100, 115]` ให้ `ratioFinal` = (190+100)/18 = 1:16.1 ถึง (190+115)/18 = 1:16.9 ตรงกับ 1:16-1:17 ที่ callout กำหนด และ 115 − 100 = 15 หารด้วย step 5 ลงตัว
 
-### 4.4 ตารางค่า — Delter Press
+### 4.4 ตารางค่า Delter Press
 
 **Base**
 
@@ -294,47 +294,47 @@ bypass `[100, 115]` ให้ `ratioFinal` = (190+100)/18 = 1:16.1 ถึง (19
 
 **ไม่มี `preinfusionWait` และ `pressSpeed` ใน base โดยตั้งใจ** roast กำหนด `preinfusionWait` ครบทั้ง 3 แถว และ process กำหนด `pressSpeed` ครบทั้ง 8 แถว ค่าใน base จึงไม่มีวันถูกอ่าน การเก็บไว้จะกลายเป็นกับดัก (แก้แล้วไม่มีอะไรเปลี่ยน) เทส 14 คุมว่าทุก combo ยังได้ค่าครบทุก field
 
-**เพดานโดสของ Delter มีสองตัว คนละเรื่องกัน** (ไม่ใช่ตัวเลขที่ขัดกัน) — **25 g** คือความจุห้องกาแฟ เกินกว่านี้ผงล้นลงถ้วย · **20 g** คือเพดานใช้งานจริง เกินกว่านี้เริ่มกดฝืดแม้ผงจะยังไม่ล้น ทั้งสองตัวปรากฏในตารางแก้รสคนละแถวกันโดยตั้งใจ
+**เพดานโดสของ Delter มีสองตัว คนละเรื่องกัน** (ไม่ใช่ตัวเลขที่ขัดกัน) · **25 g** คือความจุห้องกาแฟ เกินกว่านี้ผงล้นลงถ้วย · **20 g** คือเพดานใช้งานจริง เกินกว่านี้เริ่มกดฝืดแม้ผงจะยังไม่ล้น ทั้งสองตัวปรากฏในตารางแก้รสคนละแถวกันโดยตั้งใจ
 
-**ขั้น 1 Roast** — เจ้าของ `preinfusionWait` แต่ผู้เดียว
+**ขั้น 1 Roast**: เจ้าของ `preinfusionWait` แต่ผู้เดียว
 
 | roast | temp | grind | preinfusionWait |
 |---|---|---|---|
-| `agtron95plus` | — | `[-0.5, -0.5]` | `[60, 75]` |
-| `agtron80_95` | — | — | `[40, 60]` |
+| `agtron95plus` | - | `[-0.5, -0.5]` | `[60, 75]` |
+| `agtron80_95` | - | - | `[40, 60]` |
 | `agtron65_80` | `[+2, +2]` | `[+0.5, +0.5]` | `[30, 40]` |
 
-**ขั้น 2 Process** — เจ้าของ `pressSpeed` แต่ผู้เดียว ไม่มีคอลัมน์ `preinfusionWait` โดยตั้งใจ
+**ขั้น 2 Process**: เจ้าของ `pressSpeed` แต่ผู้เดียว ไม่มีคอลัมน์ `preinfusionWait` โดยตั้งใจ
 
 | process | temp | grind | pressSpeed | note |
 |---|---|---|---|---|
-| `washed` | `[0, 0]` | — | `[25, 30]` | ให้อภัยง่ายสุด เหมาะใช้ calibrate เครื่อง |
-| `honey` | `[0, 0]` | — | `[25, 30]` | เครื่องนี้ให้ body น้อยกว่า AeroPress อยู่แล้ว กดช้าไว้ |
-| `natural` | `[-1, -1]` | — | `[20, 25]` | รักษาหวาน/ผลไม้ |
-| `anaerobic` | `[-3, -3]` | — | `[20, 25]` | ละลายเร็วแต่ไม่ขมมากบนเครื่องนี้ อย่าเพิ่งรีบลดอะไร |
+| `washed` | `[0, 0]` | - | `[25, 30]` | ให้อภัยง่ายสุด เหมาะใช้ calibrate เครื่อง |
+| `honey` | `[0, 0]` | - | `[25, 30]` | เครื่องนี้ให้ body น้อยกว่า AeroPress อยู่แล้ว กดช้าไว้ |
+| `natural` | `[-1, -1]` | - | `[20, 25]` | รักษาหวาน/ผลไม้ |
+| `anaerobic` | `[-3, -3]` | - | `[20, 25]` | ละลายเร็วแต่ไม่ขมมากบนเครื่องนี้ อย่าเพิ่งรีบลดอะไร |
 | `cm` | `[-3, -3]` | `[0, +0.5]` | `[20, 25]` | โบ๊ซ/ไวน์ ถ้าเปรี้ยวไปให้กดช้าลงก่อน อย่าเพิ่งขึ้น temp |
 | `doubleAnaerobic` | `[-5, -3]` | `[0, +0.5]` | `[15, 20]` | แถวเดียวที่กดเร็วได้ over ไวสุด |
-| `yeast` | `[-3, -3]` | — | `[20, 25]` | ผลไม้จัด ระวังโบ๊ซ |
-| `barrel` | `[-3, -3]` | — | `[20, 25]` | เครื่องนี้เหมาะกับ barrel เป็นพิเศษ ไม่มีไอน้ำแช่ไล่กลิ่นเหล้า |
+| `yeast` | `[-3, -3]` | - | `[20, 25]` | ผลไม้จัด ระวังโบ๊ซ |
+| `barrel` | `[-3, -3]` | - | `[20, 25]` | เครื่องนี้เหมาะกับ barrel เป็นพิเศษ ไม่มีไอน้ำแช่ไล่กลิ่นเหล้า |
 
 **ขั้น 3 Altitude**
 
 | altitude | grind | preinfusionWait |
 |---|---|---|
 | `high` | `[-0.5, -0.5]` | `preinfusionAdd: 15` |
-| `mid` | — | — |
-| `low` | `[+0.5, +0.5]` | — |
+| `mid` | - | - |
+| `low` | `[+0.5, +0.5]` | - |
 
 **ขั้น 4 Origin**
 
 | origin | ปรับ | โทนรส (note) |
 |---|---|---|
-| `ethiopia` | — | ดอกไม้ ซิตรัส เบอร์รี่ ลิ้นจี่ ชา เหมาะกับเครื่องนี้สุด ใช้ base |
+| `ethiopia` | - | ดอกไม้ ซิตรัส เบอร์รี่ ลิ้นจี่ ชา เหมาะกับเครื่องนี้สุด ใช้ base |
 | `kenya` | `pressSpeedAdd: 5` | เปรี้ยวจัดอยู่แล้วและเครื่องนี้เปรี้ยวง่าย กดช้ากว่าปกติอีก 5 วิ |
-| `colombia` | — | บาลานซ์ คาราเมล ผลไม้แดง ใช้ base |
-| `brazil` | — | ถั่ว ช็อกโกแลต เปรี้ยวต่ำ ให้อภัยง่าย ถ้าอยากลอง 2 จังหวะเร็วให้เลื่อน slider ความเร็วกดไปปลายต่ำ |
+| `colombia` | - | บาลานซ์ คาราเมล ผลไม้แดง ใช้ base |
+| `brazil` | - | ถั่ว ช็อกโกแลต เปรี้ยวต่ำ ให้อภัยง่าย ถ้าอยากลอง 2 จังหวะเร็วให้เลื่อน slider ความเร็วกดไปปลายต่ำ |
 | `panamaGeisha` | ทับ `bypass: [55, 60]` | มะลิ เบอร์กาม็อต พีช ทรอปิคอล เติม bypass เยอะให้จบที่ราว 1:17 |
-| `thai` | — | หลากหลาย ยึด Process เป็นหลัก |
+| `thai` | - | หลากหลาย ยึด Process เป็นหลัก |
 
 ### 4.5 ตาราง combo อุณหภูมิที่ต้องตรงเป๊ะ
 
@@ -368,7 +368,7 @@ Mavo_dial = C2_clicks  * 0.320
 
 สาเหตุของ bias มีสองชั้นซ้อนกัน: C2 มีช่วงใช้งานจริงแค่ ~36 คลิก (1 คลิก C2 กว้างเท่ากับ 3.2 คลิก Mavo) และการแปลงเทียบแค่ระยะห่างเฟือง ไม่ได้เทียบปริมาณผงละเอียดซึ่ง C2 ให้มากกว่า
 
-### 4.7 ตารางแก้รส (ขั้น 5) — อ่านอย่างเดียว
+### 4.7 ตารางแก้รส ขั้น 5 (อ่านอย่างเดียว)
 
 แสดงตามเครื่องที่เลือก ทำทีละข้อ ชิมทุกครั้ง หยุดเมื่อดีขึ้น
 
@@ -425,8 +425,8 @@ Mavo_dial = C2_clicks  * 0.320
 | `preinfusionWait` | Delter | 5 วิ | ✔ |
 | `pressSpeed` | Delter | 5 วิ | ✔ |
 | `restBetween` | Delter | 5 วิ | ✔ |
-| `drinkTemp` | ทั้งคู่ | — | ✘ เป็นเป้าหมาย ไม่ใช่ค่าที่ตั้ง |
-| `dose`, `water`, `yield`, `ratio*`, `pressDuration` | — | — | ✘ ค่าเดี่ยวหรือค่าที่คำนวณมา |
+| `drinkTemp` | ทั้งคู่ | - | ✘ เป็นเป้าหมาย ไม่ใช่ค่าที่ตั้ง |
+| `dose`, `water`, `yield`, `ratio*`, `pressDuration` | - | - | ✘ ค่าเดี่ยวหรือค่าที่คำนวณมา |
 
 #### ขอบ slider แยกจากช่วงที่คำนวณได้
 
@@ -463,7 +463,7 @@ Mavo_dial = C2_clicks  * 0.320
 
 ### หน้า Timer
 
-**สัญญาของ `buildTimerSteps(recipe, picks)`** — คืน object เดียว:
+**สัญญาของ `buildTimerSteps(recipe, picks)`**: คืน object เดียว:
 
 ```js
 {
@@ -472,20 +472,20 @@ Mavo_dial = C2_clicks  * 0.320
 }
 ```
 
-- `name` — ชื่อ step สั้นๆ ภาษาไทย
-- `instruction` — ข้อความเต็มที่ **substitute ค่าจริงมาแล้ว** เป็น string ธรรมดา ไม่ใช่ closure (เลิกใช้ `getInstruction(values)` / `getAmount(values)` ของเดิม เพราะ `picks` ถูก resolve ตั้งแต่ตอนสร้าง step แล้ว)
-- `duration` — วินาทีของ step นั้น ใช้แสดงผลใน `TimerStep` เท่านั้น
-- `startTime` — **เวลาสะสมแบบ absolute** step แรก = 0 step ถัดไป = ผลรวม `duration` ของ step ก่อนหน้าทั้งหมด — นี่คือ field ที่ `useTimer` ใช้จริงในการหา step ปัจจุบัน
-- `totalTime` — ผลรวม `duration` ทั้งหมด ส่งเป็น argument ที่สองของ `useTimer`
+- `name`: ชื่อ step สั้นๆ ภาษาไทย
+- `instruction`: ข้อความเต็มที่ **substitute ค่าจริงมาแล้ว** เป็น string ธรรมดา ไม่ใช่ closure (เลิกใช้ `getInstruction(values)` / `getAmount(values)` ของเดิม เพราะ `picks` ถูก resolve ตั้งแต่ตอนสร้าง step แล้ว)
+- `duration`: วินาทีของ step นั้น ใช้แสดงผลใน `TimerStep` เท่านั้น
+- `startTime`: **เวลาสะสมแบบ absolute** step แรก = 0 step ถัดไป = ผลรวม `duration` ของ step ก่อนหน้าทั้งหมด · นี่คือ field ที่ `useTimer` ใช้จริงในการหา step ปัจจุบัน
+- `totalTime`: ผลรวม `duration` ทั้งหมด ส่งเป็น argument ที่สองของ `useTimer`
 
-**AeroPress — 4 steps คงที่**
+**AeroPress · 4 steps คงที่**
 
-1. ใส่กาแฟ เทน้ำถึง {water} g คนเบา 2-3 ที — 15 วิ
-2. แช่ — {picks.steep}
-3. กลับด้าน กดช้าเบา — {pressDuration}
-4. เติม bypass {picks.bypass} g ชิมไปเติมไป — 20 วิ
+1. ใส่กาแฟ เทน้ำถึง {water} g คนเบา 2-3 ที · 15 วิ
+2. แช่ · {picks.steep}
+3. กลับด้าน กดช้าเบา · {pressDuration}
+4. เติม bypass {picks.bypass} g ชิมไปเติมไป · 20 วิ
 
-**Delter — จำนวน step ขึ้นกับ `strokes` เป็น `3 + 2 × strokes`** (`strokes: 2` → 7 steps · `strokes: 3` → 9 steps)
+**Delter · จำนวน step ขึ้นกับ `strokes` เป็น `3 + 2 × strokes`** (`strokes: 2` → 7 steps · `strokes: 3` → 9 steps)
 
 **การแบ่งน้ำต่อจังหวะ** ทุกจังหวะต้องลงขีด 25 ml ที่มีอยู่จริงบนสเกล PRESS จึงแบ่งเป็นหน่วยละ 25 ml ก่อนแล้วค่อยแจก
 
@@ -505,14 +505,14 @@ ml[last] += (water − preinfusionMark) − units * 25     // เศษ < 25 ml 
 
 **เศษไปจังหวะแรก ไม่ใช่จังหวะสุดท้าย** ถ้ายกเศษไปท้าย ที่ 4 จังหวะจะได้ 25/25/25/75 คือจังหวะท้ายหนักกว่าสามเท่า ซึ่งย้อนแย้งกับเหตุผลที่แบ่งหลายจังหวะตั้งแต่แรก (กระจายแรงกดให้สม่ำเสมอ) แจกจากหัวแทน จังหวะแรกๆ หนักกว่านิดเดียวและเรียงลดหลั่นลง ซึ่งเข้ากับการที่ชั้นกาแฟต้านแรงกดมากขึ้นเรื่อยๆ
 
-1. ใส่ผงกาแฟ เคาะข้างเครื่องให้หน้าผงเรียบ เทน้ำ {water} g ถึงขีด FILL — 20 วิ
-2. Pre-infusion: ยกถึงขีด {preinfusionMark} กดจนสุด — 10 วิ
-3. รอ — {picks.preinfusionWait}
-4. จังหวะ 1: ยกถึงขีด {ml[0]} กดช้าๆ — {picks.pressSpeed}
-5. พัก — {picks.restBetween}
-6. จังหวะ 2: ยกถึงขีด {ml[1]} กดช้าๆ — {picks.pressSpeed}
+1. ใส่ผงกาแฟ เคาะข้างเครื่องให้หน้าผงเรียบ เทน้ำ {water} g ถึงขีด FILL · 20 วิ
+2. Pre-infusion: ยกถึงขีด {preinfusionMark} กดจนสุด · 10 วิ
+3. รอ · {picks.preinfusionWait}
+4. จังหวะ 1: ยกถึงขีด {ml[0]} กดช้าๆ · {picks.pressSpeed}
+5. พัก · {picks.restBetween}
+6. จังหวะ 2: ยกถึงขีด {ml[1]} กดช้าๆ · {picks.pressSpeed}
    *(ถ้า `strokes` > 2 วนเพิ่ม คู่ "พัก + จังหวะ n" ต่อไปเรื่อยๆ ไม่มี "พัก" หลังจังหวะสุดท้าย)*
-7. เติม bypass น้ำอุณหภูมิห้อง {picks.bypass} g — 15 วิ
+7. เติม bypass น้ำอุณหภูมิห้อง {picks.bypass} g · 15 วิ
 
 **นิยาม "เวลารวม" ที่ Notion เขียน** (AP 2:00-2:30 · Delter 2:20-3:00) = **ตั้งแต่ step แรกถึงจบการกด ไม่รวม step เติม bypass** ซึ่ง bypass เป็นขั้นตอนในแก้วหลังชงเสร็จแล้ว ภายใต้นิยามนี้ค่าคงที่ใน A5 ลงกรอบทั้งคู่: AeroPress combo ตั้งต้น (washed) ได้ 15 + 105 + 30 = **2:30** และ Delter combo ตั้งต้นได้ 20 + 10 + 50 + 25 + 15 + 25 = **2:25** เทส 15 ล็อกไว้เฉพาะ combo ตั้งต้น ไม่ใช่ทุก combo (combo สุดขอบอย่าง very light + double anaerobic + altitude สูง ยืดไปถึง 3:30 ซึ่งเป็นผลของโมเดล ไม่ใช่บั๊ก)
 
@@ -541,22 +541,22 @@ ml[last] += (water − preinfusionMark) − units * 25     // เศษ < 25 ml 
 
 **"ทุก combo" หมายถึงวนครบ 3 roast × 8 process × 3 altitude × 6 origin = 432 กรณีต่อเครื่อง (864 รวมสองเครื่อง)**
 
-1. **Base ตรงตาม Notion** — AeroPress `agtron80_95` + `washed` + `mid` + `colombia` → dose 18, water 190, temp `[88,88]`, grind `[6.0,6.0]`, steep `[105,105]`
-2. **ตาราง combo อุณหภูมิตรงทั้ง 6 แถวต่อเครื่อง** — ใช้ตารางข้อ 4.5 เป็น expected value ตรงๆ ตรึง altitude = `mid`, origin = `colombia`
-3. **Delter สูงกว่า AeroPress 3°C** — วนทุกคู่ (roast, process) โดยตรึง altitude = `mid` และ origin = `colombia` เทียบสองเครื่องต้องต่างกัน 3 พอดี ยกเว้น `doubleAnaerobic` ที่เทียบเฉพาะปลาย max (ต้องตรึง origin เพราะ `panamaGeisha` จำกัดช่วง temp เฉพาะ AeroPress)
-4. **`steepAdd` โดนสองรอบ (AeroPress)** — `agtron95plus` + `doubleAnaerobic` + `high` + `thai` → temp `[82,85]`, grind `[5.0,5.5]`, steep `[150,180]`
-5. **`preinfusionAdd` และ roast เป็นเจ้าของ preinfusionWait (Delter)** — `agtron95plus` + `washed` + `high` + `colombia` → preinfusionWait `[75,90]` (roast ทับเป็น `[60,75]` process ไม่แตะ แล้วบวก 15 จาก altitude) และ grind `[5.0,5.0]` — พังทันทีถ้าใครเผลอเติมคอลัมน์ `preinfusionWait` กลับเข้าตาราง Process
-6. **`tempClamp` เป็นการจำกัดช่วง ไม่ใช่การทับ และไม่กลืน altitude** — AeroPress + `panamaGeisha` ครบทั้ง 8 process (roast กลาง altitude `mid`) ต้องได้ตามตารางในข้อ 4.3: `washed`/`honey` → `[87,87]` · `natural` → `[87,87]` · `anaerobic`/`cm`/`yeast`/`barrel` → `[85,85]` · `doubleAnaerobic` → `[85,85]` (ไม่ใช่ `[85,87]` ซึ่งจะแปลว่า clamp ไปลบเจตนาของ fermented ทิ้ง) · เพิ่ม `washed` + `agtron65_80` → `[87,87]` เป็นเคสฝั่งเพดาน · และ grind ยังเป็น `[6.0,6.0]` โดยเปลี่ยน altitude เป็น `low` แล้ว grind ต้องขยับเป็น `[6.5,6.5]` (clamp แตะเฉพาะ temp)
-7. **Process ชนะ Roast ในการทับ steep** — AeroPress + `agtron65_80` + `washed` ได้ steep `[105,105]` ไม่ใช่ `[105,135]`
-8. **temp ทุก combo อยู่ในกรอบที่สมเหตุสมผลและ `min <= max`** — วนทุก combo ยืนยัน AeroPress อยู่ใน 80-92 และ Delter อยู่ใน 85-94 (แทนที่ `tempCap` ที่ถูกลบออก ถ้าใครพิมพ์เลขผิดใน `brewing-rules.js` เทสนี้จะดังแทนที่จะโดนกลบ) และยืนยัน `temp.min <= temp.max` ทุก combo ซึ่งเป็นข้อที่พังทันทีถ้าใครไปเขียน `tempClamp` เป็น interval intersection แทนการบีบทีละปลาย (21 combo กลับหัว) หรือเผลอใส่ `clampMin > clampMax`
-9. **grind ปัด 0.5 เสมอ** — วนทุก combo ยืนยันว่า `grind.min * 2` และ `grind.max * 2` เป็นจำนวนเต็ม และ `grind.min <= grind.max`
-10. **เตือน "หยาบกว่า base" ขึ้นตรงเงื่อนไข** — วนทุก combo ยืนยันว่า note เตือนปรากฏก็ต่อเมื่อ `grind.min > base.grind.min` เท่านั้น พร้อมเคสตัวอย่างสองฝั่ง: AeroPress + `agtron80_95` + `anaerobic` + `low` → grind `[6.5,6.5]` ต้องมีเตือน · เคสเดียวกันแต่ altitude `high` → grind `[5.5,5.5]` ต้องไม่มีเตือน
-11. **`ratioFinal` อยู่ในกรอบ** — วนทุก combo ยืนยัน AeroPress ได้ `ratioFinal` ในช่วง **1:13.8 ถึง 1:17.0** และ Delter ได้ **1:15.3 ถึง 1:17.4**
+1. **Base ตรงตาม Notion**: AeroPress `agtron80_95` + `washed` + `mid` + `colombia` → dose 18, water 190, temp `[88,88]`, grind `[6.0,6.0]`, steep `[105,105]`
+2. **ตาราง combo อุณหภูมิตรงทั้ง 6 แถวต่อเครื่อง**: ใช้ตารางข้อ 4.5 เป็น expected value ตรงๆ ตรึง altitude = `mid`, origin = `colombia`
+3. **Delter สูงกว่า AeroPress 3°C**: วนทุกคู่ (roast, process) โดยตรึง altitude = `mid` และ origin = `colombia` เทียบสองเครื่องต้องต่างกัน 3 พอดี ยกเว้น `doubleAnaerobic` ที่เทียบเฉพาะปลาย max (ต้องตรึง origin เพราะ `panamaGeisha` จำกัดช่วง temp เฉพาะ AeroPress)
+4. **`steepAdd` โดนสองรอบ (AeroPress)**: `agtron95plus` + `doubleAnaerobic` + `high` + `thai` → temp `[82,85]`, grind `[5.0,5.5]`, steep `[150,180]`
+5. **`preinfusionAdd` และ roast เป็นเจ้าของ preinfusionWait (Delter)**: `agtron95plus` + `washed` + `high` + `colombia` → preinfusionWait `[75,90]` (roast ทับเป็น `[60,75]` process ไม่แตะ แล้วบวก 15 จาก altitude) และ grind `[5.0,5.0]`: พังทันทีถ้าใครเผลอเติมคอลัมน์ `preinfusionWait` กลับเข้าตาราง Process
+6. **`tempClamp` เป็นการจำกัดช่วง ไม่ใช่การทับ และไม่กลืน altitude**: AeroPress + `panamaGeisha` ครบทั้ง 8 process (roast กลาง altitude `mid`) ต้องได้ตามตารางในข้อ 4.3: `washed`/`honey` → `[87,87]` · `natural` → `[87,87]` · `anaerobic`/`cm`/`yeast`/`barrel` → `[85,85]` · `doubleAnaerobic` → `[85,85]` (ไม่ใช่ `[85,87]` ซึ่งจะแปลว่า clamp ไปลบเจตนาของ fermented ทิ้ง) · เพิ่ม `washed` + `agtron65_80` → `[87,87]` เป็นเคสฝั่งเพดาน · และ grind ยังเป็น `[6.0,6.0]` โดยเปลี่ยน altitude เป็น `low` แล้ว grind ต้องขยับเป็น `[6.5,6.5]` (clamp แตะเฉพาะ temp)
+7. **Process ชนะ Roast ในการทับ steep**: AeroPress + `agtron65_80` + `washed` ได้ steep `[105,105]` ไม่ใช่ `[105,135]`
+8. **temp ทุก combo อยู่ในกรอบที่สมเหตุสมผลและ `min <= max`**: วนทุก combo ยืนยัน AeroPress อยู่ใน 80-92 และ Delter อยู่ใน 85-94 (แทนที่ `tempCap` ที่ถูกลบออก ถ้าใครพิมพ์เลขผิดใน `brewing-rules.js` เทสนี้จะดังแทนที่จะโดนกลบ) และยืนยัน `temp.min <= temp.max` ทุก combo ซึ่งเป็นข้อที่พังทันทีถ้าใครไปเขียน `tempClamp` เป็น interval intersection แทนการบีบทีละปลาย (21 combo กลับหัว) หรือเผลอใส่ `clampMin > clampMax`
+9. **grind ปัด 0.5 เสมอ**: วนทุก combo ยืนยันว่า `grind.min * 2` และ `grind.max * 2` เป็นจำนวนเต็ม และ `grind.min <= grind.max`
+10. **เตือน "หยาบกว่า base" ขึ้นตรงเงื่อนไข**: วนทุก combo ยืนยันว่า note เตือนปรากฏก็ต่อเมื่อ `grind.min > base.grind.min` เท่านั้น พร้อมเคสตัวอย่างสองฝั่ง: AeroPress + `agtron80_95` + `anaerobic` + `low` → grind `[6.5,6.5]` ต้องมีเตือน · เคสเดียวกันแต่ altitude `high` → grind `[5.5,5.5]` ต้องไม่มีเตือน
+11. **`ratioFinal` อยู่ในกรอบ**: วนทุก combo ยืนยัน AeroPress ได้ `ratioFinal` ในช่วง **1:13.8 ถึง 1:17.0** และ Delter ได้ **1:15.3 ถึง 1:17.4**
 
     *กรอบนี้กว้างกว่าที่ Notion เขียนเล็กน้อย (AP 1:14-1:16 · Delter 1:15-1:17) เพราะเลขใน Notion เป็นค่าปัด: AeroPress 18 g กับ bypass 60-100 g ให้ (190+60)/18 = 1:13.9 ถึง (190+100)/18 = 1:16.1 · Delter 15 g กับ bypass 30-60 g ให้ 1:15.3 ถึง 1:17.3 ใช้ค่าที่คำนวณได้จริงเป็นเกณฑ์ ไม่ใช่ค่าปัด · ขอบบนของ AeroPress ขยับขึ้นเป็น 1:16.9 เพราะ `panamaGeisha` ทับ bypass เป็น `[100,115]` ซึ่งเป็นค่าที่ callout Geisha กำหนดไว้เอง*
-12. **`kenya` เป็น delta ไม่ใช่ทับ** — Delter + `washed` + `kenya` → pressSpeed `[30,35]` (ตรงกับ Notion) และ Delter + `doubleAnaerobic` + `kenya` → `[20,25]` ไม่ใช่ `[30,35]` ยืนยันว่า "แถวเดียวที่กดเร็วได้" ยังกดเร็วกว่าแถวอื่นอยู่
-13. **`toMavo` ตรงกับตาราง preset ของ Notion** — C40 22 → 6.0 (22 × 0.271 = 5.96) · **C2 19 → 6.0** (19 × 0.320 = 6.08) · ผลลัพธ์ทุกค่าเป็นทวีคูณของ 0.5 · input ว่างหรือไม่ใช่ตัวเลขคืน `null`
-14. **ไม่มี field ไหนหลุด ไม่มีค่าไหนตายใน rules และ slider ครอบทุกค่าที่คำนวณได้** — วนทุก combo ยืนยันว่า field ที่จำเป็นของเครื่องนั้นมีค่าครบทุกตัว (Delter ต้องได้ `preinfusionWait` และ `pressSpeed` แม้ base ไม่ได้กำหนดไว้) · ยืนยันว่าทุก `sliderBounds` มี `(max − min)` หารด้วย step ลงตัว · และยืนยันว่าช่วงที่คำนวณได้ทุกค่าอยู่ในขอบ slider และลงบนกริด `(v − boundsMin) / step` เป็นจำนวนเต็ม (ข้อหลังคือตัวจับกรณีมีคนแก้ `brewing-rules.js` แล้วดัน default ของ slider ออกไปนอกขอบหรือหลุดกริด)
+12. **`kenya` เป็น delta ไม่ใช่ทับ**: Delter + `washed` + `kenya` → pressSpeed `[30,35]` (ตรงกับ Notion) และ Delter + `doubleAnaerobic` + `kenya` → `[20,25]` ไม่ใช่ `[30,35]` ยืนยันว่า "แถวเดียวที่กดเร็วได้" ยังกดเร็วกว่าแถวอื่นอยู่
+13. **`toMavo` ตรงกับตาราง preset ของ Notion**: C40 22 → 6.0 (22 × 0.271 = 5.96) · **C2 19 → 6.0** (19 × 0.320 = 6.08) · ผลลัพธ์ทุกค่าเป็นทวีคูณของ 0.5 · input ว่างหรือไม่ใช่ตัวเลขคืน `null`
+14. **ไม่มี field ไหนหลุด ไม่มีค่าไหนตายใน rules และ slider ครอบทุกค่าที่คำนวณได้**: วนทุก combo ยืนยันว่า field ที่จำเป็นของเครื่องนั้นมีค่าครบทุกตัว (Delter ต้องได้ `preinfusionWait` และ `pressSpeed` แม้ base ไม่ได้กำหนดไว้) · ยืนยันว่าทุก `sliderBounds` มี `(max − min)` หารด้วย step ลงตัว · และยืนยันว่าช่วงที่คำนวณได้ทุกค่าอยู่ในขอบ slider และลงบนกริด `(v − boundsMin) / step` เป็นจำนวนเต็ม (ข้อหลังคือตัวจับกรณีมีคนแก้ `brewing-rules.js` แล้วดัน default ของ slider ออกไปนอกขอบหรือหลุดกริด)
 15. **`buildTimerSteps` ถูกต้องทั้งค่า โครงสร้าง และเวลารวม**
     - AeroPress ได้ 4 step · Delter ได้ `3 + 2 × strokes` step (ทดสอบทั้ง `strokes: 2` → 7 และ `strokes: 3` → 9)
     - duration ของ step "แช่" เท่ากับ `picks.steep` พอดี · Delter step "รอ" เท่ากับ `picks.preinfusionWait` · ทุก step กดเท่ากับ `picks.pressSpeed` · ทุก step พักเท่ากับ `picks.restBetween` และไม่มี "พัก" ต่อท้ายจังหวะสุดท้าย
@@ -564,7 +564,7 @@ ml[last] += (water − preinfusionMark) − units * 25     // เศษ < 25 ml 
     - น้ำต่อจังหวะ: `strokes: 2` → `[75, 75]` · `strokes: 3` → `[50, 50, 50]` · `strokes: 4` → `[50, 50, 25, 25]` (เศษไปจังหวะแรก ไม่ใช่จังหวะสุดท้าย) · ผลรวมทุกกรณี = `water − preinfusionMark` = 150
     - **เวลารวมไม่นับ step bypass ของ combo ตั้งต้น**: AeroPress = 150 วิ (2:30) และ Delter = 145 วิ (2:25) ลงกรอบที่ Notion เขียน
 
-16. **รูปร่างของ `brewing-rules.js` ถูกต้องทั้งไฟล์** — เดินทุก node ในไฟล์แล้วตรวจ: ทุกค่าของ field ที่เป็นช่วง `normalizeRange` ได้และ `min <= max` · ไม่มี `NaN` ที่ไหน · **ทุก key ในทุก patch อยู่ในชุด field ที่รู้จักของเครื่องนั้น** (จับ typo ชื่อ field เช่น `steap` ซึ่งไม่มีกลไกอื่นจับได้ patch จะถูกเมินเงียบๆ) · และ `normalizeRange` เองรับ `120` → `[120,120]`, รับ `[120,150]` ตามเดิม, โยน error พร้อม path เมื่อเจอ string / array ผิดขนาด / NaN
+16. **รูปร่างของ `brewing-rules.js` ถูกต้องทั้งไฟล์**: เดินทุก node ในไฟล์แล้วตรวจ: ทุกค่าของ field ที่เป็นช่วง `normalizeRange` ได้และ `min <= max` · ไม่มี `NaN` ที่ไหน · **ทุก key ในทุก patch อยู่ในชุด field ที่รู้จักของเครื่องนั้น** (จับ typo ชื่อ field เช่น `steap` ซึ่งไม่มีกลไกอื่นจับได้ patch จะถูกเมินเงียบๆ) · และ `normalizeRange` เองรับ `120` → `[120,120]`, รับ `[120,150]` ตามเดิม, โยน error พร้อม path เมื่อเจอ string / array ผิดขนาด / NaN
 
 เทส 3, 8, 9, 10, 11, 12, 14 และ 16 เป็นตัวคุมว่าถ้าใครไปแก้ตัวเลขใน `brewing-rules.js` แล้วทำหลักการพังหรือเขียนผิดรูป จะรู้ทันที ซึ่งเป็นจุดสำคัญเพราะไฟล์นั้นถูกออกแบบมาให้แก้บ่อย
 
@@ -589,8 +589,8 @@ ml[last] += (water − preinfusionMark) − units * 25     // เศษ < 25 ml 
 
 บันทึกไว้เฉยๆ ไม่ต้องทำอะไรในโค้ด เพราะแอปทำงานด้วยเลขหน้าปัดล้วน ไม่เคยแปลงเป็นจำนวนคลิก
 
-- จำนวนคลิกต่อ 1 เลขบนหน้าปัด Mavo ยังไม่ยืนยัน (AeroPrecipe บอก 120 คลิกรวม = 10 คลิก/เลข · รีวิว Coffee Chronicler บอก 5 คลิก/เลข) Notion มี action item ให้หมุนนับจริงจาก 0 ถึง 1 — ข้อนี้ไม่กระทบแอปเพราะทุกค่าเป็นเลขหน้าปัดตั้งแต่ต้นจนจบ ตามหลักการข้อ 6
-- เบอร์บด base ของ Delter (6.0) เลือกมาให้ตรงกับ AeroPress เพื่อเทียบเมล็ดเดียวกันสองเครื่อง หลักฐานจริงแตก 2-2 และอาจชี้ไปทางละเอียดกว่านั้นมาก (4.5-5.5) ถ้าชงแล้วบางให้กระโดดไป 5.0 เลย ไม่ต้องขยับทีละ 0.5 — เมื่อ calibrate เสร็จให้แก้เลขเดียวใน `brewing-rules.js`
+- จำนวนคลิกต่อ 1 เลขบนหน้าปัด Mavo ยังไม่ยืนยัน (AeroPrecipe บอก 120 คลิกรวม = 10 คลิก/เลข · รีวิว Coffee Chronicler บอก 5 คลิก/เลข) Notion มี action item ให้หมุนนับจริงจาก 0 ถึง 1 · ข้อนี้ไม่กระทบแอปเพราะทุกค่าเป็นเลขหน้าปัดตั้งแต่ต้นจนจบ ตามหลักการข้อ 6
+- เบอร์บด base ของ Delter (6.0) เลือกมาให้ตรงกับ AeroPress เพื่อเทียบเมล็ดเดียวกันสองเครื่อง หลักฐานจริงแตก 2-2 และอาจชี้ไปทางละเอียดกว่านั้นมาก (4.5-5.5) ถ้าชงแล้วบางให้กระโดดไป 5.0 เลย ไม่ต้องขยับทีละ 0.5 · เมื่อ calibrate เสร็จให้แก้เลขเดียวใน `brewing-rules.js`
 
 ## 10. เกณฑ์จบงาน
 
