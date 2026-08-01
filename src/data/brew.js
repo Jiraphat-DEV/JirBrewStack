@@ -162,3 +162,18 @@ export function computeRecipe(input) {
   out.notes = notes;
   return out;
 }
+
+// กลางช่วงปัดลงให้ลงตัวกับ step เช่น [40,60] step 5 ได้ 50
+export function defaultPick([min, max], step) {
+  return min + Math.floor((max - min) / 2 / step) * step;
+}
+
+// ค่าเริ่มต้นของทุก slider คิดจากช่วงที่คำนวณได้ ไม่ใช่ขอบ slider
+export function defaultPicks(recipe) {
+  const bounds = rules[recipe.device].sliderBounds;
+  const picks = {};
+  for (const [field, b] of Object.entries(bounds)) {
+    picks[field] = defaultPick(recipe[field], b.step);
+  }
+  return picks;
+}

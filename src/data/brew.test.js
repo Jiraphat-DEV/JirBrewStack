@@ -201,3 +201,169 @@ test('computeRecipe โยน error เมื่อได้ key ที่ไม
     );
   }
 });
+
+import { defaultPick, defaultPicks } from './brew.js';
+
+const ALL_COMBOS = (device) => {
+  const out = [];
+  for (const roast of Object.keys(rules[device].roast)) {
+    for (const process of Object.keys(rules[device].process)) {
+      for (const altitude of Object.keys(rules[device].altitude)) {
+        for (const origin of Object.keys(rules[device].origin)) {
+          out.push({ device, roast, process, altitude, origin });
+        }
+      }
+    }
+  }
+  return out;
+};
+
+const label = (c) => `${c.device}/${c.roast}/${c.process}/${c.altitude}/${c.origin}`;
+
+test('มี 432 combo ต่อเครื่อง', () => {
+  assert.equal(ALL_COMBOS('aeropress').length, 432);
+  assert.equal(ALL_COMBOS('delter').length, 432);
+});
+
+// เทส 2 - ตาราง combo อุณหภูมิที่ Notion เขียนไว้
+test('ตาราง combo อุณหภูมิตรงทั้ง 6 แถวต่อเครื่อง', () => {
+  const table = [
+    ['agtron80_95', 'washed', [88, 88], [91, 91]],
+    ['agtron80_95', 'honey', [88, 88], [91, 91]],
+    ['agtron80_95', 'natural', [87, 87], [90, 90]],
+    ['agtron80_95', 'anaerobic', [85, 85], [88, 88]],
+    ['agtron80_95', 'barrel', [85, 85], [88, 88]],
+    ['agtron80_95', 'cm', [85, 85], [88, 88]],
+    ['agtron80_95', 'yeast', [85, 85], [88, 88]],
+    ['agtron80_95', 'doubleAnaerobic', [82, 85], [86, 88]],
+    ['agtron65_80', 'washed', [90, 90], [93, 93]],
+    ['agtron65_80', 'honey', [90, 90], [93, 93]],
+    ['agtron65_80', 'anaerobic', [87, 87], [90, 90]],
+  ];
+  for (const [roast, process, ap, delterTemp] of table) {
+    assert.deepStrictEqual(
+      recipeOf('aeropress', roast, process, 'mid', 'colombia').temp,
+      ap,
+      `aeropress ${roast}/${process}`,
+    );
+    assert.deepStrictEqual(
+      recipeOf('delter', roast, process, 'mid', 'colombia').temp,
+      delterTemp,
+      `delter ${roast}/${process}`,
+    );
+  }
+});
+
+// เทส 3 - Delter สูงกว่า AeroPress 3 องศา
+test('Delter สูงกว่า AeroPress 3 องศาทุกคู่ ยกเว้น doubleAnaerobic ที่เทียบเฉพาะปลาย max', () => {
+  for (const roast of Object.keys(rules.aeropress.roast)) {
+    for (const process of Object.keys(rules.aeropress.process)) {
+      const ap = recipeOf('aeropress', roast, process, 'mid', 'colombia').temp;
+      const dp = recipeOf('delter', roast, process, 'mid', 'colombia').temp;
+      assert.equal(dp[1] - ap[1], 3, `${roast}/${process} ปลาย max`);
+      if (process !== 'doubleAnaerobic') {
+        assert.equal(dp[0] - ap[0], 3, `${roast}/${process} ปลาย min`);
+      } else {
+        assert.equal(dp[0] - ap[0], 4, `${roast}/${process} ปลาย min ต่างกัน 4 โดยตั้งใจ`);
+      }
+    }
+  }
+});
+
+// เทส 8 - temp ทุก combo อยู่ในกรอบและไม่กลับหัว
+test('temp ทุก combo อยู่ในกรอบและ min ไม่เกิน max', () => {
+  for (const device of DEVICES) {
+    const b = rules[device].sliderBounds.temp;
+    for (const combo of ALL_COMBOS(device)) {
+      const { temp } = computeRecipe(combo);
+      assert.ok(temp[0] <= temp[1], `${label(combo)} temp กลับหัว ${JSON.stringify(temp)}`);
+      assert.ok(temp[0] >= b.min && temp[1] <= b.max, `${label(combo)} temp ${JSON.stringify(temp)}`);
+    }
+  }
+});
+
+// เทส 9 - grind ปัด 0.5 เสมอ
+test('grind ทุก combo เป็นทวีคูณของ 0.5 และ min ไม่เกิน max', () => {
+  for (const device of DEVICES) {
+    for (const combo of ALL_COMBOS(device)) {
+      const { grind } = computeRecipe(combo);
+      assert.ok(Number.isInteger(grind[0] * 2), `${label(combo)} grind.min ${grind[0]}`);
+      assert.ok(Number.isInteger(grind[1] * 2), `${label(combo)} grind.max ${grind[1]}`);
+      assert.ok(grind[0] <= grind[1], `${label(combo)} grind กลับหัว`);
+    }
+  }
+});
+
+// เทส 10 - เตือนหยาบกว่า base ขึ้นตรงเงื่อนไขเป๊ะ
+test('เตือนหยาบกว่า base ขึ้นก็ต่อเมื่อ grind.min มากกว่า base.grind.min', () => {
+  for (const device of DEVICES) {
+    const baseGrindMin = normalizeRange(rules[device].base.grind)[0];
+    for (const combo of ALL_COMBOS(device)) {
+      const r = computeRecipe(combo);
+      assert.equal(
+        r.notes.includes(COARSE_NOTE),
+        r.grind[0] > baseGrindMin,
+        `${label(combo)} grind ${JSON.stringify(r.grind)}`,
+      );
+    }
+  }
+});
+
+// เทส 11 - ratioFinal อยู่ในกรอบที่คำนวณได้จริง
+test('ratioFinal ทุก combo อยู่ในกรอบ', () => {
+  const bands = { aeropress: [13.8, 17.0], delter: [15.3, 17.4] };
+  for (const device of DEVICES) {
+    const [lo, hi] = bands[device];
+    for (const combo of ALL_COMBOS(device)) {
+      const { ratioFinal } = computeRecipe(combo);
+      assert.ok(ratioFinal[0] >= lo, `${label(combo)} ratioFinal.min ${ratioFinal[0]}`);
+      assert.ok(ratioFinal[1] <= hi, `${label(combo)} ratioFinal.max ${ratioFinal[1]}`);
+    }
+  }
+});
+
+// เทส 14 - ไม่มี field ไหนหลุด และ slider ครอบทุกค่าที่คำนวณได้
+test('ทุก combo ได้ field ครบ อยู่ในขอบ slider และลงกริด step', () => {
+  for (const device of DEVICES) {
+    const bounds = rules[device].sliderBounds;
+    for (const combo of ALL_COMBOS(device)) {
+      const r = computeRecipe(combo);
+      for (const [field, b] of Object.entries(bounds)) {
+        assert.ok(Array.isArray(r[field]), `${label(combo)} ไม่มี ${field}`);
+        for (const v of r[field]) {
+          assert.ok(v >= b.min && v <= b.max, `${label(combo)} ${field}=${v} หลุดขอบ slider`);
+          const grid = (v - b.min) / b.step;
+          assert.ok(
+            Math.abs(Math.round(grid) - grid) < 1e-9,
+            `${label(combo)} ${field}=${v} ไม่ลงกริด step ${b.step}`,
+          );
+        }
+      }
+    }
+  }
+});
+
+test('defaultPick คือกลางช่วงปัดลงให้ลงตัวกับ step', () => {
+  assert.equal(defaultPick([40, 60], 5), 50);
+  assert.equal(defaultPick([105, 120], 5), 110);
+  assert.equal(defaultPick([20, 25], 5), 20);
+  assert.equal(defaultPick([88, 88], 1), 88);
+  assert.equal(defaultPick([5.0, 6.0], 0.5), 5.5);
+});
+
+test('defaultPicks ให้ค่าครบทุก slider และอยู่ในช่วงที่คำนวณได้', () => {
+  for (const device of DEVICES) {
+    const bounds = rules[device].sliderBounds;
+    for (const combo of ALL_COMBOS(device)) {
+      const r = computeRecipe(combo);
+      const picks = defaultPicks(r);
+      assert.deepStrictEqual(Object.keys(picks).sort(), Object.keys(bounds).sort());
+      for (const [field, v] of Object.entries(picks)) {
+        assert.ok(
+          v >= r[field][0] && v <= r[field][1],
+          `${label(combo)} ${field}=${v} หลุดช่วง ${JSON.stringify(r[field])}`,
+        );
+      }
+    }
+  }
+});
