@@ -68,6 +68,12 @@ export const COARSE_NOTE =
 
 const STAGES = ['roast', 'process', 'altitude', 'origin'];
 
+// เฉพาะเครื่องจริงเท่านั้น ไม่ใช่ทั้ง default export ของ brewing-rules.js
+// ซึ่งมี defaults/options/fixes ปนอยู่ด้วย
+const DEVICE_TABLE = Object.fromEntries(
+  rules.options.device.map(({ key }) => [key, rules[key]]),
+);
+
 const clampInto = (v, [lo, hi]) => Math.min(Math.max(v, lo), hi);
 
 function pick(table, key, what) {
@@ -86,7 +92,7 @@ function scalar(value, path) {
 
 export function computeRecipe(input) {
   const { device } = input;
-  const d = pick(rules, device, 'device');
+  const d = pick(DEVICE_TABLE, device, 'device');
 
   const out = { device };
   for (const [field, value] of Object.entries(d.base)) {

@@ -192,4 +192,12 @@ test('เตือนหยาบกว่า base ขึ้นเมื่อ g
 test('computeRecipe โยน error เมื่อได้ key ที่ไม่รู้จัก', () => {
   assert.throws(() => recipeOf('frenchpress', 'agtron80_95', 'washed', 'mid', 'colombia'), /frenchpress/);
   assert.throws(() => recipeOf('aeropress', 'agtron80_95', 'espresso', 'mid', 'colombia'), /espresso/);
+  // device ต้องมาจาก options.device เท่านั้น ไม่ใช่ key ไหนก็ได้ใน default export ของ brewing-rules.js
+  for (const notADevice of ['options', 'defaults', 'fixes']) {
+    assert.throws(
+      () => recipeOf(notADevice, 'agtron80_95', 'washed', 'mid', 'colombia'),
+      new RegExp(notADevice),
+      `ควรโยน error สำหรับ device "${notADevice}"`,
+    );
+  }
 });
