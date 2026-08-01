@@ -98,3 +98,98 @@ test('ทุกตัวเลือกใน options มีครบทุก s
     [...DEVICES].sort(),
   );
 });
+
+import { computeRecipe, COARSE_NOTE } from './brew.js';
+
+const recipeOf = (device, roast, process, altitude, origin) =>
+  computeRecipe({ device, roast, process, altitude, origin });
+
+// เทส 1 - Base ตรงตาม Notion
+test('AeroPress base ตรงตาม Notion', () => {
+  const r = recipeOf('aeropress', 'agtron80_95', 'washed', 'mid', 'colombia');
+  assert.equal(r.dose, 18);
+  assert.equal(r.water, 190);
+  assert.deepStrictEqual(r.temp, [88, 88]);
+  assert.deepStrictEqual(r.grind, [6.0, 6.0]);
+  assert.deepStrictEqual(r.steep, [105, 105]);
+});
+
+// เทส 4 - steepAdd โดนสองรอบ
+test('steepAdd สะสมจากทั้ง roast และ altitude', () => {
+  const r = recipeOf('aeropress', 'agtron95plus', 'doubleAnaerobic', 'high', 'thai');
+  assert.deepStrictEqual(r.temp, [82, 85]);
+  assert.deepStrictEqual(r.grind, [5.0, 5.5]);
+  assert.deepStrictEqual(r.steep, [150, 180]);
+});
+
+// เทส 5 - roast เป็นเจ้าของ preinfusionWait แต่ผู้เดียว และ preinfusionAdd บวกทีหลัง
+test('Delter preinfusionWait มาจาก roast แล้วบวกด้วย altitude', () => {
+  const r = recipeOf('delter', 'agtron95plus', 'washed', 'high', 'colombia');
+  assert.deepStrictEqual(r.preinfusionWait, [75, 90]);
+  assert.deepStrictEqual(r.grind, [5.0, 5.0]);
+});
+
+// เทส 6 - tempClamp เป็นการจำกัดช่วง ไม่ใช่การทับ และไม่กลืน altitude
+test('panamaGeisha บน AeroPress บีบ temp เข้ากรอบ 85-87 ทีละปลาย', () => {
+  const expected = {
+    washed: [87, 87],
+    honey: [87, 87],
+    natural: [87, 87],
+    anaerobic: [85, 85],
+    cm: [85, 85],
+    doubleAnaerobic: [85, 85],
+    yeast: [85, 85],
+    barrel: [85, 85],
+  };
+  for (const [process, temp] of Object.entries(expected)) {
+    const r = recipeOf('aeropress', 'agtron80_95', process, 'mid', 'panamaGeisha');
+    assert.deepStrictEqual(r.temp, temp, `process ${process}`);
+  }
+  // ฝั่งเพดาน roast กลาง + washed ปกติได้ 90
+  assert.deepStrictEqual(
+    recipeOf('aeropress', 'agtron65_80', 'washed', 'mid', 'panamaGeisha').temp,
+    [87, 87],
+  );
+  // clamp แตะเฉพาะ temp altitude ยังมีผลกับ grind ตามปกติ
+  assert.deepStrictEqual(
+    recipeOf('aeropress', 'agtron80_95', 'washed', 'mid', 'panamaGeisha').grind,
+    [6.0, 6.0],
+  );
+  assert.deepStrictEqual(
+    recipeOf('aeropress', 'agtron80_95', 'washed', 'low', 'panamaGeisha').grind,
+    [6.5, 6.5],
+  );
+});
+
+// เทส 7 - Process ชนะ Roast ในการทับ steep
+test('process ทับ steep ทับทีหลัง roast', () => {
+  const r = recipeOf('aeropress', 'agtron65_80', 'washed', 'mid', 'colombia');
+  assert.deepStrictEqual(r.steep, [105, 105]);
+});
+
+// เทส 12 - kenya บวกท้าย ไม่ใช่ทับ
+test('kenya บวก pressSpeed ท้ายสุด ไม่ลบค่าของ process', () => {
+  assert.deepStrictEqual(
+    recipeOf('delter', 'agtron80_95', 'washed', 'mid', 'kenya').pressSpeed,
+    [30, 35],
+  );
+  assert.deepStrictEqual(
+    recipeOf('delter', 'agtron80_95', 'doubleAnaerobic', 'mid', 'kenya').pressSpeed,
+    [20, 25],
+  );
+});
+
+test('เตือนหยาบกว่า base ขึ้นเมื่อ grind.min มากกว่า base', () => {
+  const coarse = recipeOf('aeropress', 'agtron80_95', 'anaerobic', 'low', 'colombia');
+  assert.deepStrictEqual(coarse.grind, [6.5, 6.5]);
+  assert.ok(coarse.notes.includes(COARSE_NOTE));
+
+  const fine = recipeOf('aeropress', 'agtron80_95', 'anaerobic', 'high', 'colombia');
+  assert.deepStrictEqual(fine.grind, [5.5, 5.5]);
+  assert.ok(!fine.notes.includes(COARSE_NOTE));
+});
+
+test('computeRecipe โยน error เมื่อได้ key ที่ไม่รู้จัก', () => {
+  assert.throws(() => recipeOf('frenchpress', 'agtron80_95', 'washed', 'mid', 'colombia'), /frenchpress/);
+  assert.throws(() => recipeOf('aeropress', 'agtron80_95', 'espresso', 'mid', 'colombia'), /espresso/);
+});
