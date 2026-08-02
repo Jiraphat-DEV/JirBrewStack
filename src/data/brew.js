@@ -177,3 +177,25 @@ export function defaultPicks(recipe) {
   }
   return picks;
 }
+
+// ตัวแปลงหน่วยบด ใช้อ่านสูตรจากเน็ตเท่านั้น แอปทำงานด้วยเลขหน้าปัด Mavo ล้วน
+// ไม่มีค่าชดเชยในสูตร ทั้งสองเส้นทางตรงตามตาราง preset ของ Notion
+export const GRINDERS = [
+  { key: 'c40', label: 'Comandante C40 (คลิก)', factor: 0.271, warning: '' },
+  {
+    key: 'c2',
+    label: 'Timemore C2 (คลิก)',
+    factor: 0.320,
+    warning:
+      'เส้นทาง C2 ให้ค่าละเอียดกว่าเส้นทาง C40 เฉลี่ย 0.69 เลข (SD 0.69) ค่าจริงน่าจะหยาบกว่านี้ราวครึ่งเลข ใช้อ่านสูตรเก่าเท่านั้น ห้ามใช้ตั้งค่าจริง',
+  },
+];
+
+export function toMavo(clicks, grinder) {
+  const g = GRINDERS.find((x) => x.key === grinder);
+  if (!g) throw new Error(`ไม่รู้จักเครื่องบด "${grinder}"`);
+  if (typeof clicks === 'string' && clicks.trim() === '') return null;
+  const n = Number(clicks);
+  if (clicks === null || clicks === undefined || !Number.isFinite(n)) return null;
+  return roundHalf(n * g.factor);
+}

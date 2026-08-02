@@ -372,3 +372,40 @@ test('defaultPicks ให้ค่าครบทุก slider และอย�
     }
   }
 });
+
+import { toMavo, GRINDERS } from './brew.js';
+
+// เทส 13 - toMavo ตรงกับตาราง preset ของ Notion ไม่มีค่าชดเชยในสูตร
+test('toMavo ตรงกับตาราง preset ของ Notion', () => {
+  assert.equal(toMavo(22, 'c40'), 6.0); // 22 * 0.271 = 5.962
+  assert.equal(toMavo(19, 'c2'), 6.0); // 19 * 0.320 = 6.08
+  assert.equal(toMavo(20, 'c40'), 5.5); // 20 * 0.271 = 5.42
+  assert.equal(toMavo(28, 'c2'), 9.0); // 28 * 0.320 = 8.96
+});
+
+test('toMavo คืนทวีคูณของ 0.5 เสมอ', () => {
+  for (let clicks = 0; clicks <= 60; clicks += 1) {
+    for (const { key } of GRINDERS) {
+      const v = toMavo(clicks, key);
+      assert.ok(Number.isInteger(v * 2), `${key} ${clicks} ได้ ${v}`);
+    }
+  }
+});
+
+test('toMavo คืน null เมื่อ input ว่างหรือไม่ใช่ตัวเลข', () => {
+  for (const bad of ['', '   ', null, undefined, 'abc', NaN, Infinity]) {
+    assert.equal(toMavo(bad, 'c40'), null, `input ${JSON.stringify(bad)}`);
+  }
+  assert.equal(toMavo('22', 'c40'), 6.0); // string ที่เป็นตัวเลขยังรับได้
+});
+
+test('toMavo โยน error เมื่อไม่รู้จักเครื่องบด', () => {
+  assert.throws(() => toMavo(22, 'ek43'), /ek43/);
+});
+
+test('GRINDERS มีข้อความเตือนบนเส้นทาง C2', () => {
+  const c2 = GRINDERS.find((g) => g.key === 'c2');
+  assert.ok(c2.warning.includes('0.69'));
+  const c40 = GRINDERS.find((g) => g.key === 'c40');
+  assert.equal(c40.warning, '');
+});
