@@ -77,6 +77,17 @@ export function useTimer(steps, totalTime) {
     lastStepRef.current = -1;
   }, []);
 
+  // ข้ามไปยังเวลาที่ระบุ ใช้ตอนผู้ใช้กดเลือก step เอง
+  // เพราะขั้นตอนจริงเสร็จเร็วหรือช้ากว่าเวลาที่ตั้งไว้เสมอ
+  // ไม่แตะ isRunning นอกจากกรณีข้ามไปจนจบ กำลังเดินอยู่ก็เดินต่อ หยุดอยู่ก็ยังหยุด
+  const seek = useCallback((seconds) => {
+    const target = Math.max(0, Math.min(seconds, totalTime));
+    const done = target >= totalTime;
+    setElapsedTime(target);
+    setIsComplete(done);
+    if (done) setIsRunning(false);
+  }, [totalTime]);
+
   const formatTime = useCallback((seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -97,6 +108,7 @@ export function useTimer(steps, totalTime) {
     pause,
     toggle,
     reset,
+    seek,
     formatTime,
   };
 }

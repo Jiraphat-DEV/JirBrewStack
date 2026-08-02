@@ -76,6 +76,7 @@ export default function Timer({ recipe, picks, onBack }) {
                 ? timer.formatTime(timer.stepTimeRemaining)
                 : timer.formatTime(step.duration)
             }
+            onSeek={() => timer.seek(step.startTime)}
           />
         ))}
       </div>

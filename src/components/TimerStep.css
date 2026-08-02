@@ -8,6 +8,14 @@
   border: 2px solid var(--color-border);
   transition: all var(--transition-normal);
   opacity: 0.6;
+  /* เป็นปุ่ม กดเพื่อข้ามไปขั้นตอนนั้นได้ เพราะเวลาจริงไม่เคยตรงกับที่ตั้งไว้ */
+  width: 100%;
+  text-align: left;
+  color: inherit;
+}
+
+.timer-step:active {
+  transform: scale(0.99);
 }
 
 .timer-step--active {
@@ -53,12 +61,14 @@
 }
 
 .timer-step__name {
+  display: block;
   font-weight: 600;
   font-size: 0.9375rem;
   color: var(--color-text);
 }
 
 .timer-step__instruction {
+  display: block;
   font-size: 0.8125rem;
   color: var(--color-text-muted);
   margin-top: 2px;
