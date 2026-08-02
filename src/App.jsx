@@ -3,6 +3,7 @@ import rules from './data/brewing-rules.js';
 import { computeRecipe, defaultPicks } from './data/brew.js';
 import Worksheet from './components/Worksheet.jsx';
 import RecipeCard from './components/RecipeCard.jsx';
+import GrindConverter from './components/GrindConverter.jsx';
 import './App.css';
 
 export default function App() {
@@ -58,6 +59,7 @@ export default function App() {
               onPick={changePick}
               onStart={() => setView('timer')}
             />
+            <GrindConverter />
           </>
         )}
       </main>
