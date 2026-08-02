@@ -1,6 +1,8 @@
 # JirBrewStack
 
-Coffee brewing calculator and timer with roast levels, bean types, and Timemore C2 grind settings.
+เครื่องคำนวณสูตรกาแฟและตัวจับเวลาสำหรับ AeroPress (inverted) และ Delter Press คำนวณจาก roast, process, ระดับความสูง และ origin ของเมล็ด
+
+ตัวเลขและกฎการชงทั้งหมดอยู่ในไฟล์เดียวคือ `src/data/brewing-rules.js` แก้ค่าได้โดยไม่ต้องแตะโค้ด
 
 ## Demo
 
@@ -8,12 +10,11 @@ https://jirbrewstack.web.app
 
 ## Features
 
-- Multiple brew methods (AeroPress Standard, AeroPress Inverted, Pour-over)
-- 5-level strength slider (Extra Light to Extra Bold)
-- 5-level roast selector (Blonde to Dark)
-- Bean type selection (Arabica, Robusta, Blend)
-- Timemore C2 grind size recommendations
-- Built-in brew timer with step-by-step guidance
+- คำนวณสูตร AeroPress (inverted) และ Delter Press จาก 4 ตัวแปร: roast, process, ระดับความสูง, origin
+- สูตรออกมาเป็นช่วงแนะนำ พร้อม slider ให้เลือกค่าจริงที่จะตั้งบนเครื่อง (อุณหภูมิ, เบอร์บด, เวลาแช่/กด, bypass ฯลฯ)
+- ตัวจับเวลาแบบ step-by-step ที่เดินตามสูตรและค่าที่เลือกจริง พร้อมล็อกไม่ให้จอดับระหว่างชง
+- ตารางแก้รส 5 ขั้น อ่านอย่างเดียว แยกตามเครื่องที่เลือก
+- ตัวแปลงหน่วยบด Comandante C40 และ Timemore C2 เป็นเลขหน้าปัด Mavo Phantox Pro (ใช้อ่านสูตรเก่าเท่านั้น แอปทำงานด้วยเลขหน้าปัด Mavo ล้วน)
 - Responsive mobile layout
 
 ## Tech Stack
@@ -33,4 +34,7 @@ bun run dev
 
 # Build for production
 bun run build
+
+# Run tests
+bun run test
 ```
