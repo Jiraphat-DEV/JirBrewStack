@@ -196,6 +196,6 @@ export function toMavo(clicks, grinder) {
   if (!g) throw new Error(`ไม่รู้จักเครื่องบด "${grinder}"`);
   if (typeof clicks === 'string' && clicks.trim() === '') return null;
   const n = Number(clicks);
-  if (clicks === null || clicks === undefined || !Number.isFinite(n)) return null;
+  if (clicks === null || clicks === undefined || !Number.isFinite(n) || n < 0) return null;
   return roundHalf(n * g.factor);
 }

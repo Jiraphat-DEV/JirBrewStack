@@ -397,6 +397,9 @@ test('toMavo คืน null เมื่อ input ว่างหรือไม
     assert.equal(toMavo(bad, 'c40'), null, `input ${JSON.stringify(bad)}`);
   }
   assert.equal(toMavo('22', 'c40'), 6.0); // string ที่เป็นตัวเลขยังรับได้
+  assert.equal(toMavo(-5, 'c40'), null); // negative number returns null
+  assert.equal(toMavo('-5', 'c40'), null); // negative numeric string returns null
+  assert.equal(toMavo(0, 'c40'), 0); // zero is valid and returns 0
 });
 
 test('toMavo โยน error เมื่อไม่รู้จักเครื่องบด', () => {
