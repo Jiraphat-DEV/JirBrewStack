@@ -50,6 +50,7 @@ function RangeSlider({ label, format, value, range, bounds, onChange }) {
         step={bounds.step}
         value={value}
         aria-label={label}
+        aria-valuetext={format(value)}
         style={{ '--band-start': `${pct(range[0])}%`, '--band-end': `${pct(range[1])}%` }}
         onChange={(e) => onChange(Number(e.target.value))}
       />

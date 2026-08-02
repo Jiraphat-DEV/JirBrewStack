@@ -54,14 +54,18 @@
 }
 
 /* ต้องเจาะจงกว่า input[type="range"] ใน index.css จึงจะทับพื้นหลังได้ */
+/* กล่องสูง 44px เพื่อพื้นที่แตะ (box-sizing: border-box จาก global reset ทำให้ height นี้คือความสูงจริง)
+   ส่วนที่มองเห็นยังคงเป็นแถบ 8px กลางกล่อง วาดด้วย background-size/position/repeat ควบคู่ gradient เดิม */
 input[type='range'].recipe__slider {
+  height: 44px;
   margin: 6px 0 2px;
   background: linear-gradient(
-    to right,
-    var(--color-border) 0 var(--band-start),
-    var(--color-accent) var(--band-start) var(--band-end),
-    var(--color-border) var(--band-end) 100%
-  );
+      to right,
+      var(--color-border) 0 var(--band-start),
+      var(--color-accent) var(--band-start) var(--band-end),
+      var(--color-border) var(--band-end) 100%
+    )
+    no-repeat center / 100% 8px;
 }
 
 .recipe__slider-hint {
