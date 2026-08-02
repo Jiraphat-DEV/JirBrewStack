@@ -6,13 +6,16 @@ export default function GrindConverter() {
   const [clicks, setClicks] = useState({ c40: '', c2: '' });
 
   return (
-    <section className="converter">
-      <h2 className="converter__title">แปลงหน่วยบดเป็นเลขหน้าปัด Mavo</h2>
-      {GRINDERS.map((grinder) => {
-        const mavo = toMavo(clicks[grinder.key], grinder.key);
-        return (
-          <div key={grinder.key}>
-            <div className="converter__row">
+    <details className="converter">
+      <summary className="converter__summary">
+        <h2 className="converter__title">แปลงหน่วยบดเป็นเลขหน้าปัด Mavo</h2>
+        <span className="converter__chevron" aria-hidden="true">⌄</span>
+      </summary>
+      <div className="converter__body">
+        {GRINDERS.map((grinder) => {
+          const mavo = toMavo(clicks[grinder.key], grinder.key);
+          return (
+            <div className="converter__row" key={grinder.key}>
               <label className="converter__label" htmlFor={`converter-${grinder.key}`}>
                 {grinder.label}
               </label>
@@ -26,11 +29,11 @@ export default function GrindConverter() {
                 onChange={(e) => setClicks((prev) => ({ ...prev, [grinder.key]: e.target.value }))}
               />
               <output className="converter__result" htmlFor={`converter-${grinder.key}`} aria-live="polite">{mavo === null ? '' : `Mavo ${mavo.toFixed(1)}`}</output>
+              {grinder.warning && <p className="converter__warning">{grinder.warning}</p>}
             </div>
-            {grinder.warning && <p className="converter__warning">{grinder.warning}</p>}
-          </div>
-        );
-      })}
-    </section>
+          );
+        })}
+      </div>
+    </details>
   );
 }

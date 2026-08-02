@@ -8,7 +8,8 @@ export default function FixTable({ device }) {
         ข้อที่บอกให้เพิ่มกาแฟ ต้องชั่งเอง แอปล็อกโดสไว้ที่ค่าตั้งต้น ไม่ได้ปรับให้
       </p>
       <p className="fix__intro">
-        {rules[device].label} · ทำทีละข้อ ชิมทุกครั้ง หยุดเมื่อดีขึ้น
+        <span className="fix__intro-badge">{rules[device].label}</span>
+        <span className="fix__intro-desc">ทำทีละข้อ ชิมทุกครั้ง หยุดเมื่อดีขึ้น</span>
       </p>
       {rules.fixes[device].map((fix) => (
         <article className="fix__card" key={fix.symptom}>
