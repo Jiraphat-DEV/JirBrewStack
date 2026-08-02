@@ -1,0 +1,158 @@
+.recipe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.recipe .stats {
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.recipe__section-title {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.4px;
+}
+
+.recipe__sliders {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+/* label กับ "แนะนำ ..." ซ้อนกันเป็นคอลัมน์เดียว ค่าที่เลือกอยู่ขวา
+   ของเดิม hint เป็นบรรทัดที่สามใต้ track ทำให้ slider หนึ่งตัวกินไป 3 บรรทัด และ Delter มี 6 ตัว */
+.recipe__slider-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+
+.recipe__slider-label {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.recipe__slider-hint {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.recipe__slider-value {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.recipe__slider-value--outside {
+  color: var(--color-warning-text);
+}
+
+/* ต้องเจาะจงกว่า input[type="range"] ใน index.css จึงจะทับพื้นหลังได้
+   กล่องสูง 44px เพื่อพื้นที่แตะ (box-sizing: border-box จาก global reset ทำให้ height นี้คือความสูงจริง)
+   ส่วนที่มองเห็นยังคงเป็นแถบ 8px กลางกล่อง วาดด้วย background-size/position/repeat ควบคู่ gradient เดิม */
+input[type='range'].recipe__slider {
+  height: var(--tap);
+  margin-top: var(--s-1);
+  background: linear-gradient(
+      to right,
+      var(--color-border) 0 var(--band-start),
+      var(--color-accent) var(--band-start) var(--band-end),
+      var(--color-border) var(--band-end) 100%
+    )
+    no-repeat center / 100% 8px;
+}
+
+.recipe__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--fs-sm);
+}
+
+.recipe__info-row {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: var(--s-3);
+}
+
+.recipe__info-label {
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.recipe__info-value {
+  color: var(--color-text);
+}
+
+.recipe__info-value:only-child {
+  grid-column: 1 / -1;
+  color: var(--color-text-muted);
+}
+
+.recipe__info-sub {
+  color: var(--color-text-muted);
+}
+
+.recipe__ratio-live {
+  color: var(--color-primary);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.recipe__notes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  list-style: none;
+  font-size: var(--fs-sm);
+  color: var(--color-text);
+}
+
+.recipe__note {
+  padding-left: var(--s-3);
+  border-left: 2px solid var(--color-border);
+}
+
+.recipe__note--warning {
+  padding: var(--s-2) var(--s-3);
+  background: var(--color-warning-bg);
+  border-left: 3px solid var(--color-warning-border);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--color-warning-text);
+  font-weight: 600;
+}
+
+/* ลอยติดล่างจอระหว่างที่การ์ดยังอยู่ในสายตา ของ Delter มี slider 6 ตัว ถ้าไม่ทำแบบนี้ต้องเลื่อนผ่านหมดก่อนถึงปุ่ม */
+.recipe__start {
+  position: sticky;
+  bottom: calc(var(--s-3) + env(safe-area-inset-bottom, 0px));
+  padding: var(--s-4);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  min-height: 56px;
+  box-shadow: var(--shadow-md);
+  transition: background var(--transition-fast);
+}
+
+.recipe__start:hover {
+  background: var(--color-accent);
+}

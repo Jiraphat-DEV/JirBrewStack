@@ -1,23 +1,26 @@
 .timer {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--s-5);
 }
 
 .timer__header {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--s-4);
 }
 
 .timer__back-btn {
-  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: var(--s-2) var(--s-3);
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
-  min-height: 44px;
+  min-height: var(--tap);
 }
 
 .timer__back-btn:hover {
@@ -25,55 +28,28 @@
   color: var(--color-text);
 }
 
-.timer__method {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.timer__back-icon {
+  font-size: var(--fs-lg);
+  line-height: 1;
 }
 
-.timer__method-icon {
-  font-size: 1.25rem;
-}
-
-.timer__method-name {
-  font-size: 1rem;
-  font-weight: 600;
+.timer__device {
+  font-size: var(--fs-lg);
+  font-weight: 700;
   color: var(--color-text);
 }
 
+/* .stats/.stat* ใน index.css จัดการหน้าตาตัวเลขให้แล้ว เหลือแค่ห่อเป็นการ์ด */
 .timer__summary {
-  display: flex;
-  justify-content: space-around;
-  padding: 16px;
+  padding: var(--s-4);
   background: var(--color-surface);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
 }
 
-.timer__summary-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.timer__summary-value {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--color-primary);
-}
-
-.timer__summary-label {
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .timer__display {
   text-align: center;
-  padding: 32px 24px;
+  padding: var(--s-5) var(--s-4);
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   border: 2px solid var(--color-border);
@@ -85,10 +61,24 @@
   background: linear-gradient(135deg, var(--color-success) 0%, #6B8B5E 100%);
 }
 
+.timer__step-indicator {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: var(--s-2);
+}
+
+.timer__display--complete .timer__step-indicator {
+  color: white;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
 .timer__time {
-  font-size: 4rem;
+  font-size: var(--fs-display);
   font-weight: 700;
   color: var(--color-text);
+  line-height: 1;
   font-variant-numeric: tabular-nums;
   letter-spacing: -2px;
 }
@@ -101,7 +91,7 @@
   height: 6px;
   background: var(--color-border);
   border-radius: 3px;
-  margin-top: 16px;
+  margin-top: var(--s-4);
   overflow: hidden;
 }
 
@@ -120,33 +110,33 @@
   background: white;
 }
 
-.timer__complete-msg {
-  margin-top: 12px;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: white;
-}
-
 .timer__steps {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--s-2);
 }
 
+/* ติดล่างจอไว้เสมอ กดหยุด/เริ่มได้โดยไม่ต้องเลื่อนหาตอนมือไม่ว่าง
+   พื้นหลังทึบสีเดียวกับพื้นหน้า กันไม่ให้ timer__steps ที่เลื่อนผ่านทะลุมาให้เห็น */
 .timer__controls {
   display: flex;
-  gap: 12px;
-  margin-top: 8px;
+  gap: var(--s-3);
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  padding: var(--s-3) 0 calc(var(--s-3) + env(safe-area-inset-bottom, 0px));
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
 }
 
 .timer__control-btn {
   flex: 1;
-  padding: 16px 24px;
-  font-size: 1.125rem;
+  padding: var(--s-4) var(--s-5);
+  font-size: var(--fs-md);
   font-weight: 600;
   border-radius: var(--radius-md);
   transition: all var(--transition-fast);
-  min-height: 56px;
+  min-height: calc(var(--tap) + var(--s-3));
 }
 
 .timer__control-btn--secondary {
@@ -178,9 +168,15 @@
   background: #6B8B5E;
 }
 
+.timer__control-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+  transform: none;
+}
+
 @keyframes flash {
   0%, 100% { background-color: var(--color-bg); }
-  50% { background-color: var(--color-warning); }
+  50% { background-color: var(--color-warning-flash); }
 }
 
 body.step-change {

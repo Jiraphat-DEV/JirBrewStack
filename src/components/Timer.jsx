@@ -1,129 +1,110 @@
 import { useEffect } from 'react';
-import { TimerStep } from './TimerStep';
-import { useTimer } from '../hooks/useTimer';
-import { recipes, getAdjustedTemperature } from '../data/recipes';
+import { useTimer } from '../hooks/useTimer.js';
+import { useWakeLock } from '../hooks/useWakeLock.js';
+import { buildTimerSteps } from '../data/brew.js';
+import rules from '../data/brewing-rules.js';
+import TimerStep from './TimerStep.jsx';
 import './Timer.css';
 
-export function Timer({ method, values, strength, roastLevel, onBack, onRateBrew }) {
-  const recipe = recipes[method];
-  const baseTemp = recipe.temperatures[strength];
-  const temp = getAdjustedTemperature(baseTemp, roastLevel);
-  const {
-    isRunning,
-    isComplete,
-    currentStepIndex,
-    stepTimeRemaining,
-    totalTimeRemaining,
-    stepChanged,
-    progress,
-    toggle,
-    reset,
-    formatTime,
-  } = useTimer(recipe.steps, recipe.totalTime);
+export default function Timer({ recipe, picks, onBack }) {
+  const { steps, totalTime } = buildTimerSteps(recipe, picks);
+  const timer = useTimer(steps, totalTime);
+  useWakeLock(timer.isRunning);
 
+  // กะพริบพื้นหลังตอนเปลี่ยน step เพื่อให้เห็นจากระยะแขนตอนมือไม่ว่าง
   useEffect(() => {
-    if (stepChanged && isRunning) {
-      document.body.classList.add('step-change');
-      setTimeout(() => {
-        document.body.classList.remove('step-change');
-      }, 500);
-    }
-  }, [stepChanged, isRunning]);
+    if (!timer.stepChanged) return undefined;
+    document.body.classList.add('step-change');
+    const id = setTimeout(() => document.body.classList.remove('step-change'), 500);
+    return () => {
+      clearTimeout(id);
+      document.body.classList.remove('step-change');
+    };
+  }, [timer.stepChanged]);
 
-  const handleReset = () => {
-    reset();
-  };
-
-  const handleBack = () => {
-    reset();
-    onBack();
+  const stepState = (index) => {
+    if (index === timer.currentStepIndex) return 'active';
+    if (index < timer.currentStepIndex) return 'complete';
+    return 'pending';
   };
 
   return (
     <div className="timer">
       <div className="timer__header">
-        <button className="timer__back-btn" onClick={handleBack}>
-          ← Back
+        <button type="button" className="timer__back-btn" onClick={onBack}>
+          <span className="timer__back-icon" aria-hidden="true">‹</span>
+          ย้อนกลับ
         </button>
-        <div className="timer__method">
-          <span className="timer__method-icon">{recipe.icon}</span>
-          <span className="timer__method-name">{recipe.name} {recipe.subtitle}</span>
+        <span className="timer__device">{rules[recipe.device].label}</span>
+      </div>
+
+      <div className="timer__summary stats">
+        <div className="stat">
+          <span className="stat__value">{recipe.dose} g</span>
+          <span className="stat__label">กาแฟ</span>
+        </div>
+        <div className="stat">
+          <span className="stat__value">{recipe.water} g</span>
+          <span className="stat__label">น้ำ</span>
+        </div>
+        <div className="stat">
+          <span className="stat__value">{picks.temp} องศา</span>
+          <span className="stat__label">อุณหภูมิ</span>
+        </div>
+        <div className="stat">
+          <span className="stat__value">{picks.grind.toFixed(1)}</span>
+          <span className="stat__label">Mavo</span>
         </div>
       </div>
 
-      <div className="timer__summary">
-        <div className="timer__summary-item">
-          <span className="timer__summary-value">{values.coffee}g</span>
-          <span className="timer__summary-label">Coffee</span>
+      <div className={`timer__display${timer.isComplete ? ' timer__display--complete' : ''}`}>
+        {/* รวมสถานะขั้นตอนปัจจุบันไว้ในกล่องเดียวกับเวลา จะได้อ่านสถานะทั้งหมดได้จากจุดเดียวตอนมือไม่ว่าง */}
+        <div className="timer__step-indicator">
+          {timer.isComplete
+            ? 'ชงเสร็จแล้ว'
+            : `ขั้นที่ ${timer.currentStepIndex + 1}/${steps.length} · ${timer.currentStep.name}`}
         </div>
-        <div className="timer__summary-item">
-          <span className="timer__summary-value">{values.water}ml</span>
-          <span className="timer__summary-label">Water</span>
-        </div>
-        <div className="timer__summary-item">
-          <span className="timer__summary-value">{temp.min}-{temp.max}°C</span>
-          <span className="timer__summary-label">Temp</span>
-        </div>
-      </div>
-
-      <div className={`timer__display ${isComplete ? 'timer__display--complete' : ''}`}>
-        <div className="timer__time">{formatTime(totalTimeRemaining)}</div>
+        <div className="timer__time">{timer.formatTime(timer.totalTimeRemaining)}</div>
         <div className="timer__progress-bar">
-          <div
-            className="timer__progress-fill"
-            style={{ width: `${progress}%` }}
-          />
+          <div className="timer__progress-fill" style={{ width: `${timer.progress}%` }} />
         </div>
-        {isComplete && <div className="timer__complete-msg">Brew Complete!</div>}
       </div>
 
       <div className="timer__steps">
-        {recipe.steps.map((step, index) => (
+        {steps.map((step, index) => (
           <TimerStep
-            key={index}
+            key={step.name}
             step={step}
             index={index}
-            isActive={index === currentStepIndex}
-            isComplete={index < currentStepIndex || isComplete}
-            timeRemaining={stepTimeRemaining}
-            formatTime={formatTime}
-            values={values}
+            state={stepState(index)}
+            remaining={
+              index === timer.currentStepIndex
+                ? timer.formatTime(timer.stepTimeRemaining)
+                : timer.formatTime(step.duration)
+            }
+            onSeek={() => timer.seek(step.startTime)}
           />
         ))}
       </div>
 
       <div className="timer__controls">
-        {isComplete ? (
-          <>
-            <button
-              className="timer__control-btn timer__control-btn--secondary"
-              onClick={handleBack}
-            >
-              New Brew
-            </button>
-            <button
-              className="timer__control-btn timer__control-btn--primary timer__control-btn--complete"
-              onClick={onRateBrew}
-            >
-              Rate This Brew
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              className="timer__control-btn timer__control-btn--secondary"
-              onClick={handleReset}
-            >
-              Reset
-            </button>
-            <button
-              className="timer__control-btn timer__control-btn--primary"
-              onClick={toggle}
-            >
-              {isRunning ? 'Pause' : 'Start'}
-            </button>
-          </>
-        )}
+        <button
+          type="button"
+          className="timer__control-btn timer__control-btn--secondary"
+          onClick={timer.reset}
+        >
+          ชงซ้ำ
+        </button>
+        <button
+          type="button"
+          className={`timer__control-btn timer__control-btn--primary${
+            timer.isComplete ? ' timer__control-btn--complete' : ''
+          }`}
+          onClick={timer.toggle}
+          disabled={timer.isComplete}
+        >
+          {timer.isComplete ? 'เสร็จแล้ว' : timer.isRunning ? 'หยุดชั่วคราว' : 'เริ่ม'}
+        </button>
       </div>
     </div>
   );

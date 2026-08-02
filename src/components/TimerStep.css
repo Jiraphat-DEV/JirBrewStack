@@ -1,21 +1,29 @@
 .timer-step {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: var(--s-3);
+  padding: var(--s-3);
   background: var(--color-surface);
   border-radius: var(--radius-md);
   border: 2px solid var(--color-border);
   transition: all var(--transition-normal);
-  opacity: 0.6;
+  opacity: 0.5;
+  /* เป็นปุ่ม กดเพื่อข้ามไปขั้นตอนนั้นได้ เพราะเวลาจริงไม่เคยตรงกับที่ตั้งไว้ */
+  width: 100%;
+  text-align: left;
+  color: inherit;
 }
 
+.timer-step:active {
+  transform: scale(0.99);
+}
+
+/* สถานะนิ่ง ไม่มี animation แล้ว เพราะเต้นตลอดเวลาน่ารำคาญและ scale() ทำให้เงาโดนตัด
+   ใช้แถบสี accent ด้านซ้าย (inset shadow ไม่กระทบ border-radius) แทนตัวบอกว่าเป็นขั้นที่กำลังทำอยู่ */
 .timer-step--active {
   opacity: 1;
   border-color: var(--color-accent);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-md);
-  transform: scale(1.02);
+  box-shadow: inset 4px 0 0 var(--color-accent), var(--shadow-md);
 }
 
 .timer-step--complete {
@@ -24,14 +32,14 @@
 }
 
 .timer-step__number {
-  width: 32px;
-  height: 32px;
+  width: var(--s-6);
+  height: var(--s-6);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   background: var(--color-border);
-  font-size: 0.875rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--color-text-muted);
   flex-shrink: 0;
@@ -53,41 +61,27 @@
 }
 
 .timer-step__name {
+  display: block;
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: var(--fs-base);
   color: var(--color-text);
 }
 
 .timer-step__instruction {
-  font-size: 0.8125rem;
+  display: block;
+  font-size: var(--fs-sm);
   color: var(--color-text-muted);
   margin-top: 2px;
 }
 
-.timer-step__preview {
-  font-size: 0.75rem;
-  color: var(--color-primary);
-  margin-top: 2px;
-  font-weight: 500;
-}
-
 .timer-step__time {
-  font-size: 0.875rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--color-text-muted);
   flex-shrink: 0;
 }
 
 .timer-step--active .timer-step__time {
-  font-size: 1.125rem;
+  font-size: var(--fs-md);
   color: var(--color-accent);
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-.timer-step--active {
-  animation: pulse 2s ease-in-out infinite;
 }

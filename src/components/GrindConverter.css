@@ -1,0 +1,84 @@
+/* ห่อทั้งก้อนด้วย details ปิดไว้เป็นค่าเริ่มต้น เพราะเป็นตัวช่วยอ่านสูตรเก่า ไม่ได้ใช้ทุกครั้ง */
+.converter {
+  padding: var(--s-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.converter__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  min-height: var(--tap);
+}
+
+.converter__title {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.4px;
+}
+
+/* หมุนด้วย attribute selector ของ details ไม่ต้องพึ่ง state ใน React */
+.converter__chevron {
+  color: var(--color-text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.converter[open] .converter__chevron {
+  transform: rotate(180deg);
+}
+
+.converter__body {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  margin-top: var(--s-3);
+}
+
+/* display: contents ทำให้ลูกๆ ของแต่ละแถวเข้าไปเป็นช่อง grid ของ converter__body โดยตรง
+   คอลัมน์เลยกว้างเท่ากันทุกแถวไม่ว่า label จะยาวแค่ไหน ต่างจากเดิมที่แต่ละแถวเป็น flex ของตัวเอง */
+.converter__row {
+  display: contents;
+}
+
+.converter__label {
+  font-size: var(--fs-sm);
+  color: var(--color-text);
+}
+
+.converter__input {
+  width: 4.5rem;
+  padding: var(--s-2);
+  text-align: center;
+  background: var(--color-sunken);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  min-height: var(--tap);
+}
+
+/* ผลลัพธ์กว้างเท่ากันทุกแถวอยู่แล้วเพราะเป็นคอลัมน์ grid เดียวกัน จองความกว้างจากแถวที่ยาวสุดให้เอง
+   ตอนว่างใส่ placeholder จางๆ กันช่องความสูง/กว้างขยับตอนเริ่มพิมพ์ */
+.converter__result {
+  min-width: 4.5rem;
+  text-align: right;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.converter__result:empty::before {
+  content: '—';
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.converter__warning {
+  grid-column: 1 / -1;
+  margin-top: var(--s-1);
+  font-size: var(--fs-xs);
+  color: var(--color-warning-text);
+}

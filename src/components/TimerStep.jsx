@@ -1,35 +1,19 @@
 import './TimerStep.css';
 
-export function TimerStep({ step, index, isActive, isComplete, timeRemaining, formatTime, values }) {
-  let statusClass = '';
-  if (isComplete) {
-    statusClass = 'timer-step--complete';
-  } else if (isActive) {
-    statusClass = 'timer-step--active';
-  }
-
-  const instruction = step.getInstruction ? step.getInstruction(values) : step.instruction;
-  const amount = step.getAmount ? step.getAmount(values) : null;
-
+export default function TimerStep({ step, index, state, remaining, onSeek }) {
   return (
-    <div className={`timer-step ${statusClass}`}>
-      <div className="timer-step__number">
-        {isComplete ? '✓' : index + 1}
-      </div>
-      <div className="timer-step__content">
-        <div className="timer-step__name">{step.name}</div>
-        {isActive && (
-          <div className="timer-step__instruction">{instruction}</div>
-        )}
-        {!isActive && !isComplete && amount && (
-          <div className="timer-step__preview">
-            {amount.water}ml
-          </div>
-        )}
-      </div>
-      <div className="timer-step__time">
-        {isActive ? formatTime(timeRemaining) : `${step.duration}s`}
-      </div>
-    </div>
+    <button
+      type="button"
+      className={`timer-step${state === 'pending' ? '' : ` timer-step--${state}`}`}
+      aria-current={state === 'active' ? 'step' : undefined}
+      onClick={onSeek}
+    >
+      <span className="timer-step__number">{index + 1}</span>
+      <span className="timer-step__content">
+        <span className="timer-step__name">{step.name}</span>
+        <span className="timer-step__instruction">{step.instruction}</span>
+      </span>
+      <span className="timer-step__time">{remaining}</span>
+    </button>
   );
 }

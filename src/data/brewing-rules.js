@@ -1,0 +1,324 @@
+// ตัวเลขและข้อความทั้งหมดของ JirBrewStack v2
+// ที่มา: Notion worksheet 2 หน้า
+//   AeroPress 39df3937-0750-8177-aa5a-d1bede3ecb95
+//   Delter    3aef3937-0750-817e-b5a1-cf891d91f821
+// ไฟล์นี้ตั้งใจให้แก้บ่อยโดยไม่ต้องแตะโค้ด ทุกค่าที่นี่มีผลจริง
+// ค่าที่เป็นช่วงเขียนได้ทั้ง 90 และ [90, 90] ให้ผลเหมือนกัน
+// ค่าคงที่ของสองเครื่องแยกกันเด็ดขาด ห้าม sync เลขข้ามเครื่อง แม้ตัวเลขจะบังเอิญเท่ากัน
+
+const options = {
+  device: [
+    { key: 'aeropress', label: 'AeroPress' },
+    { key: 'delter', label: 'Delter Press' },
+  ],
+  roast: [
+    { key: 'agtron95plus', label: 'Agtron 95+', hint: 'อ่อนมาก' },
+    { key: 'agtron80_95', label: 'Agtron 80-95', hint: 'อ่อน' },
+    { key: 'agtron65_80', label: 'Agtron 65-80', hint: 'กลาง' },
+  ],
+  process: [
+    { key: 'washed', label: 'Washed' },
+    { key: 'honey', label: 'Honey' },
+    { key: 'natural', label: 'Natural' },
+    { key: 'anaerobic', label: 'Anaerobic' },
+    { key: 'cm', label: 'Carbonic Maceration' },
+    { key: 'doubleAnaerobic', label: 'Double Anaerobic' },
+    { key: 'yeast', label: 'Yeast' },
+    { key: 'barrel', label: 'Barrel Aged' },
+  ],
+  altitude: [
+    { key: 'high', label: 'สูง', hint: 'มากกว่า 1,800' },
+    { key: 'mid', label: 'กลาง', hint: '1,200-1,800' },
+    { key: 'low', label: 'ต่ำ', hint: 'น้อยกว่า 1,200' },
+  ],
+  origin: [
+    { key: 'ethiopia', label: 'เอธิโอเปีย' },
+    { key: 'kenya', label: 'เคนยา' },
+    { key: 'colombia', label: 'โคลอมเบีย' },
+    { key: 'brazil', label: 'บราซิล' },
+    { key: 'panamaGeisha', label: 'ปานามา เกอิชา' },
+    { key: 'thai', label: 'ไทย' },
+  ],
+};
+
+const defaults = {
+  device: 'aeropress',
+  roast: 'agtron80_95',
+  process: 'washed',
+  altitude: 'mid',
+  origin: 'colombia',
+};
+
+const aeropress = {
+  label: 'AeroPress (inverted)',
+
+  base: {
+    dose: 18,
+    water: 190, // 1:10.5 ค่ากลางแชมป์ WAC
+    temp: 88,
+    grind: 6.0, // เลขหน้าปัด Mavo Phantox Pro
+    steep: 90, // 1:30
+    pressDuration: 30, // กดช้าเบา ไม่มี patch ไหนแตะ
+    bypass: [60, 100], // น้ำร้อน
+    drinkTemp: [60, 70],
+    filter: 'กระดาษ 1 ใบ (ล้างก่อน) ถ้าเป็น fermented หรืออยากได้ clarity ลอง 2 ใบ',
+    bloom: 'ไม่ทำ bloom เป็นค่าตั้งต้น เทน้ำครบรวดเดียว คนเบา 2-3 ที',
+  },
+
+  // ขอบ slider คือสิ่งที่เครื่องทำได้ ไม่ใช่ช่วงที่แนะนำ
+  // กว้างกว่าช่วงที่คำนวณได้เพื่อให้ตารางแก้รสสั่งอะไรก็ทำได้จริง
+  sliderBounds: {
+    temp: { min: 80, max: 92, step: 1 },
+    grind: { min: 5.0, max: 8.0, step: 0.5 },
+    steep: { min: 60, max: 180, step: 5 },
+    bypass: { min: 40, max: 140, step: 5 },
+  },
+
+  // ระยะเวลา step ที่ Notion ไม่ได้ระบุ ตั้งเอง (A5 ในสเปก)
+  timing: {
+    pour: 15,
+    bypassPour: 20,
+  },
+
+  roast: {
+    agtron95plus: { grind: [-0.5, -0.5], steepAdd: 15 },
+    agtron80_95: {},
+    agtron65_80: { temp: [2, 2], grind: [0.5, 1.0], steep: [105, 135] },
+  },
+
+  process: {
+    washed: {
+      temp: [0, 0],
+      steep: [105, 105],
+      note: 'สะอาด เปรี้ยวสดใส เป็น process เดียวที่ข้าม bypass ได้ ถ้าอยากลองให้ชง 18 g ต่อน้ำ 250 g รวดเดียว (1:14) แล้วไม่ต้องเติมน้ำในแก้ว แอปไม่ได้คำนวณสูตรนั้นให้ ต้องทำเอง',
+    },
+    honey: { temp: [0, 0], note: 'หวานนุ่ม body ดี' },
+    natural: { temp: [-1, -1], note: 'รักษาหวานและกลิ่นผลไม้' },
+    anaerobic: {
+      temp: [-3, -3],
+      steep: [105, 120],
+      note: 'ละลายเร็ว over ง่าย ถ้าขมให้เพิ่ม bypass ก่อน อย่าเพิ่งบดหยาบ',
+    },
+    cm: {
+      temp: [-3, -3],
+      grind: [0, 0.5],
+      steep: [105, 120],
+      note: 'โบ๊ซและไวน์ ถ้า over จะออกขมแบบยา แนะนำ bypass',
+    },
+    doubleAnaerobic: {
+      temp: [-6, -3],
+      grind: [0, 0.5],
+      steep: [120, 150],
+      note: 'cell wall พังมากสุด over ไวสุด bypass จำเป็น',
+    },
+    yeast: { temp: [-3, -3], steep: [105, 120], note: 'ผลไม้จัด ระวังโบ๊ซ' },
+    barrel: {
+      temp: [-3, -3],
+      steep: [105, 120],
+      note: 'กลิ่นเหล้าระเหยง่าย คนเบาสุด bypass ช่วยให้กลิ่นเหล้าเด่นแบบไม่ขม',
+    },
+  },
+
+  // Altitude ไม่แตะ temp เด็ดขาด แตะเฉพาะ grind และเวลา
+  altitude: {
+    high: { grind: [-0.5, -0.5], steepAdd: 15 },
+    mid: {},
+    low: { grind: [0.5, 0.5] },
+  },
+
+  origin: {
+    ethiopia: { note: 'ดอกไม้ ซิตรัส เบอร์รี่ ลิ้นจี่ ชา เอา clarity ปลายเย็น' },
+    kenya: { note: 'เบอร์รี่และแบล็คเคอแรนต์ เปรี้ยวจัด สะอาด รับ extraction ได้นิดเพื่อ body' },
+    colombia: { note: 'บาลานซ์ คาราเมล ผลไม้แดง ใช้ค่าตั้งต้นได้เลย' },
+    brazil: { note: 'ถั่ว ช็อกโกแลต เปรี้ยวต่ำ ให้อภัยง่าย ใช้ค่าตั้งต้นหรือเย็นลงนิด' },
+    panamaGeisha: {
+      // clamp ไม่ใช่ทับ callout ใน Notion นับ barrel-Geisha รวมด้วย ทั้งที่ barrel ปกติได้ 85 อยู่แล้ว
+      // แปลว่า 85-87 เป็นทั้งพื้นและเพดาน กันเย็นเกินจนกลิ่นไม่ออก และร้อนเกินจนกลิ่นพัง
+      tempClamp: [85, 87],
+      bypass: [100, 115], // ให้จบที่ 1:16.1 ถึง 1:16.9 ตามที่ callout กำหนด
+      note: 'มะลิ เบอร์กาม็อต พีช ทรอปิคอล คนเบาสุด bypass เยอะเพื่อ clarity',
+    },
+    thai: { note: 'หลากหลาย ยึด Process เป็นหลัก' },
+  },
+};
+
+const delter = {
+  label: 'Delter Press',
+
+  base: {
+    dose: 15,
+    water: 200, // 1:13.3 ถึงขาล่างของวงเล็บ FILL พอดี
+    temp: 91, // สูงกว่า AeroPress 3 องศา ชดเชยที่ไม่มีการแช่
+    grind: 6.0,
+    preinfusionMark: 50, // ml บนสเกล PRESS ต่ำสุดของเครื่อง
+    strokes: 2, // เปลี่ยนเป็น 3 แล้ว timer เพิ่ม step และแบ่งน้ำใหม่ให้เอง
+    restBetween: [15, 20], // ไม่มีขั้นไหนแตะ base เป็นเจ้าของคนเดียว
+    yield: 170, // 200 ลบผงดูดซับราว 30 g ใช้เป็นจุดเช็คตาชั่ง
+    yieldNote: 'ต่ำกว่า 150 g คือกดไม่สุด เกิน 185 g คือน้ำเลี่ยงชั้นกาแฟ',
+    bypass: [30, 60], // น้ำอุณหภูมิห้อง หน้าที่คือดึงอุณหภูมิถ้วยลง ไม่ใช่ลดขม
+    drinkTemp: [60, 70],
+    filter: 'กระดาษ Delter 1 ใบ (ล้างก่อน) ห้ามซ้อน 2 ใบ เพราะจะกดฝืด',
+    // ไม่มี preinfusionWait และ pressSpeed ใน base โดยตั้งใจ
+    // roast กำหนด preinfusionWait ครบทั้ง 3 แถว และ process กำหนด pressSpeed ครบทั้ง 8 แถว
+    // ค่าใน base จึงไม่มีวันถูกอ่าน เก็บไว้จะกลายเป็นกับดัก
+  },
+
+  sliderBounds: {
+    temp: { min: 85, max: 94, step: 1 },
+    grind: { min: 4.5, max: 8.0, step: 0.5 },
+    preinfusionWait: { min: 20, max: 90, step: 5 },
+    pressSpeed: { min: 10, max: 45, step: 5 },
+    restBetween: { min: 0, max: 40, step: 5 },
+    bypass: { min: 20, max: 90, step: 5 },
+  },
+
+  timing: {
+    fill: 20,
+    preinfusionPress: 10,
+    bypassPour: 15,
+  },
+
+  // เจ้าของ preinfusionWait แต่ผู้เดียว
+  roast: {
+    agtron95plus: { grind: [-0.5, -0.5], preinfusionWait: [60, 75] },
+    agtron80_95: { preinfusionWait: [40, 60] },
+    agtron65_80: { temp: [2, 2], grind: [0.5, 0.5], preinfusionWait: [30, 40] },
+  },
+
+  // เจ้าของ pressSpeed แต่ผู้เดียว ไม่มีคอลัมน์ preinfusionWait โดยตั้งใจ
+  process: {
+    washed: { temp: [0, 0], pressSpeed: [25, 30], note: 'ให้อภัยง่ายสุด เหมาะใช้ calibrate เครื่อง' },
+    honey: {
+      temp: [0, 0],
+      pressSpeed: [25, 30],
+      note: 'เครื่องนี้ให้ body น้อยกว่า AeroPress อยู่แล้ว กดช้าไว้',
+    },
+    natural: { temp: [-1, -1], pressSpeed: [20, 25], note: 'รักษาหวานและกลิ่นผลไม้' },
+    anaerobic: {
+      temp: [-3, -3],
+      pressSpeed: [20, 25],
+      note: 'ละลายเร็วแต่ไม่ขมมากบนเครื่องนี้ อย่าเพิ่งรีบลดอะไร',
+    },
+    cm: {
+      temp: [-3, -3],
+      grind: [0, 0.5],
+      pressSpeed: [20, 25],
+      note: 'โบ๊ซและไวน์ ถ้าเปรี้ยวไปให้กดช้าลงก่อน อย่าเพิ่งขึ้น temp',
+    },
+    doubleAnaerobic: {
+      temp: [-5, -3],
+      grind: [0, 0.5],
+      pressSpeed: [15, 20],
+      note: 'แถวเดียวที่กดเร็วได้ over ไวสุด',
+    },
+    yeast: { temp: [-3, -3], pressSpeed: [20, 25], note: 'ผลไม้จัด ระวังโบ๊ซ' },
+    barrel: {
+      temp: [-3, -3],
+      pressSpeed: [20, 25],
+      note: 'เครื่องนี้เหมาะกับ barrel เป็นพิเศษ ไม่มีไอน้ำแช่ไล่กลิ่นเหล้า',
+    },
+  },
+
+  altitude: {
+    high: { grind: [-0.5, -0.5], preinfusionAdd: 15 },
+    mid: {},
+    low: { grind: [0.5, 0.5] },
+  },
+
+  origin: {
+    ethiopia: { note: 'ดอกไม้ ซิตรัส เบอร์รี่ ลิ้นจี่ ชา เหมาะกับเครื่องนี้สุด ใช้ค่าตั้งต้นได้เลย' },
+    kenya: {
+      // บวกท้ายแทนการทับ เพื่อไม่ให้ลบ [15,20] ของ doubleAnaerobic ทิ้ง
+      // washed + kenya ได้ [30,35] ตรงกับ Notion พอดี
+      pressSpeedAdd: 5,
+      note: 'เปรี้ยวจัดอยู่แล้วและเครื่องนี้เปรี้ยวง่าย กดช้ากว่าปกติอีก 5 วิ',
+    },
+    colombia: { note: 'บาลานซ์ คาราเมล ผลไม้แดง ใช้ค่าตั้งต้นได้เลย' },
+    brazil: {
+      note: 'ถั่ว ช็อกโกแลต เปรี้ยวต่ำ ให้อภัยง่าย ถ้าอยากลอง 2 จังหวะเร็วให้เลื่อน slider ความเร็วกดไปปลายต่ำ',
+    },
+    panamaGeisha: {
+      bypass: [55, 60],
+      note: 'มะลิ เบอร์กาม็อต พีช ทรอปิคอล เติม bypass เยอะให้จบที่ราว 1:17',
+    },
+    thai: { note: 'หลากหลาย ยึด Process เป็นหลัก' },
+  },
+};
+
+// ตารางแก้รส ขั้น 5 อ่านอย่างเดียว ทำทีละข้อ ชิมทุกครั้ง หยุดเมื่อดีขึ้น
+// AeroPress ขึ้นอาการขมก่อน เพราะเป็น immersion เสี่ยงสกัดเกิน
+// Delter ขึ้นอาการบางก่อน เพราะเป็น percolation เสี่ยงสกัดไม่พอ
+const fixes = {
+  aeropress: [
+    {
+      symptom: 'ขม ไม่มีกลิ่น แบน',
+      steps: [
+        'ลด temp 1-2 องศา',
+        'ยังขม เพิ่ม bypass อีก 20-30 g',
+        'ยังขม คนเบาลง หรือ steep สั้นลง',
+        'ยังขม บดหยาบขึ้น +0.5 พร้อมเพิ่มกาแฟ 2 g (หยาบลอยๆ จะกลายเป็นบาง)',
+      ],
+    },
+    {
+      symptom: 'เปรี้ยว บาง จืด',
+      steps: [
+        'บดละเอียดขึ้น -0.5',
+        'ยังเปรี้ยว steep นานขึ้น',
+        'ยังเปรี้ยว เพิ่ม temp 1-2 องศา',
+        'ลด bypass ลง',
+      ],
+    },
+    {
+      symptom: 'บางไป ไม่แน่น',
+      steps: ['ลด bypass ลง', 'ยังบาง เพิ่มกาแฟเป็น 20 g'],
+    },
+  ],
+  delter: [
+    {
+      symptom: 'บาง จืด เปรี้ยว ไม่มี body',
+      steps: [
+        'บดละเอียดขึ้น -0.5 ถึง -1',
+        'ยังบาง กดช้าลง ยืดเป็น 30-40 วิต่อจังหวะ',
+        'ยังบาง ยืดเวลารอหลัง pre-infusion เป็น 60 วิ และเพิ่มพักระหว่างจังหวะเป็น 30 วิ',
+        'ยังบาง ลด bypass แล้วเพิ่มกาแฟเป็น 17-18 g',
+      ],
+    },
+    {
+      symptom: 'ขม ฝาด',
+      steps: [
+        'เช็คก่อนว่ากดฝืดไหม ถ้าฝืดคือต้นเหตุ บดหยาบขึ้น +0.5 แล้วหยุด',
+        'ไม่ฝืดแต่ยังขม ลด temp 2-3 องศา',
+        'ยังขม เพิ่ม bypass 20-30 g',
+        'ยังขม แบ่งเป็น 3 จังหวะแทน 2 (ตั้ง strokes: 3 ใน brewing-rules.js แล้ว timer จะแบ่งน้ำใหม่ให้เอง)',
+      ],
+    },
+    {
+      symptom: 'เปรี้ยวแหลมและขมพร้อมกัน',
+      steps: [
+        'อาการ channeling น้ำเจาะทางเดียว เคาะปรับหน้าผงให้เรียบก่อนกด ยืด pre-infusion กดช้าลง ห้ามฝืน',
+        'อาการนี้ไม่มีบน AeroPress เพราะเป็นการแช่เต็มตัว',
+      ],
+    },
+    {
+      symptom: 'กดฝืดมาก เครื่องเกือบล้ม',
+      steps: [
+        'บดหยาบขึ้น +0.5 ถึง +1 ทันที ห้ามฝืน',
+        'เช็คว่าโดสไม่เกิน 20 g ซึ่งเป็นเพดานใช้งานก่อนกดฝืด',
+        'ใส่กระดาษใบเดียว',
+      ],
+    },
+    {
+      symptom: 'น้ำทะลุเร็วผิดปกติ แทบไม่มีแรงต้าน',
+      steps: ['บดละเอียดขึ้น -0.5', 'ถ้าไม่เปลี่ยน เช็คว่ากระดาษแนบขอบไหม น้ำอาจเลี่ยงชั้นกาแฟไปเลย'],
+    },
+    {
+      symptom: 'มีผงลงถ้วย',
+      steps: [
+        'โดสเกิน 25 g ซึ่งเป็นความจุห้องกาแฟ ผงล้นลงถ้วย',
+        'หรือกระดาษไม่เข้าที่ ล้างกระดาษด้วยน้ำร้อนก่อนเสมอ',
+      ],
+    },
+  ],
+};
+
+export default { defaults, options, fixes, aeropress, delter };

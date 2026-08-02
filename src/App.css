@@ -3,63 +3,84 @@
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  max-width: 480px;
+  max-width: var(--app-width);
   margin: 0 auto;
-  padding: 16px;
-  padding-bottom: env(safe-area-inset-bottom, 16px);
+  padding: 0 var(--s-4) calc(var(--s-5) + env(safe-area-inset-bottom, 0px));
 }
 
+/* header ติดบนตลอด จะได้สลับไปหน้าแก้รสได้ระหว่างที่เลื่อนอ่านสูตรอยู่กลางหน้า
+   margin ลบเท่ากับ padding ของ .app คือทำให้พื้นหลังกินเต็มความกว้างจนไม่มีช่องให้เนื้อหาลอดขึ้นมาข้างๆ */
 .app__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
-  justify-content: center;
   align-items: center;
-  position: relative;
-  padding: 8px 0 16px;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin: 0 calc(var(--s-4) * -1);
+  padding: var(--s-2) var(--s-4);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .app__title {
-  font-size: 1.5rem;
+  font-size: var(--fs-lg);
   font-weight: 700;
   color: var(--color-primary);
   letter-spacing: -0.5px;
 }
 
-.app__history-btn {
-  position: absolute;
-  right: 0;
-  padding: 8px 14px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  background: var(--color-surface);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  transition: all var(--transition-fast);
-  min-height: 36px;
+/* segmented control: ปุ่มสองอันอยู่ในรางเดียว อ่านออกว่าเป็นตัวเลือกคู่กัน
+   ของเดิมเป็นปุ่มกรอบแยกสองอันที่ position: absolute แล้วทับหัวข้อจนตัวหนังสือขาด */
+.app__nav {
+  display: flex;
+  gap: var(--s-1);
+  padding: 3px;
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-pill);
 }
 
-.app__history-btn:hover {
-  background: var(--color-border);
-  color: var(--color-text);
+.app__nav-btn {
+  padding: 0 var(--s-4);
+  min-height: var(--tap);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.app__nav-btn--active {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .app__main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--s-4);
+  padding-top: var(--s-4);
 }
 
 @media (min-width: 480px) {
   .app {
-    padding: 24px;
+    padding: 0 var(--s-5) calc(var(--s-6) + env(safe-area-inset-bottom, 0px));
   }
 
   .app__header {
-    padding: 16px 0 24px;
+    margin: 0 calc(var(--s-5) * -1);
+    padding: var(--s-3) var(--s-5);
   }
 
   .app__title {
-    font-size: 1.75rem;
+    font-size: var(--fs-xl);
+  }
+
+  .app__main {
+    padding-top: var(--s-5);
+    gap: var(--s-5);
   }
 }

@@ -1,0 +1,86 @@
+.fix {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+/* callout เบาๆ ไม่ใช่กรอบเต็มใบ แถบสีด้านซ้ายพอให้รู้ว่าเป็นคำเตือน ไม่แย่งสายตาจากการ์ดข้างล่าง */
+.fix__caption {
+  padding: var(--s-3) var(--s-3) var(--s-3) var(--s-4);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-warning-text);
+  background: var(--color-warning-bg);
+  border-left: 4px solid var(--color-warning-border);
+  border-radius: var(--radius-sm);
+}
+
+.fix__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+/* ชื่อเครื่องแยกเป็น badge ของตัวเอง ไม่ปนกับคำอธิบายในบรรทัดสีเทาเดียวกันเหมือนเดิม */
+.fix__intro-badge {
+  align-self: flex-start;
+  padding: var(--s-1) var(--s-3);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-pill);
+}
+
+.fix__intro-desc {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.fix__card {
+  padding: var(--s-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.fix__symptom {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: var(--s-3);
+}
+
+/* เลิกใช้ bullet จางๆ ของ ol เดิม ทำเลขลำดับเป็นวงกลม contrast ชัดให้ดูเป็นขั้นตอนจริง */
+.fix__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  list-style: none;
+  counter-reset: step;
+  font-size: var(--fs-base);
+  color: var(--color-text);
+}
+
+/* เลขต้องเกาะบรรทัดแรก ไม่ใช่กลางก้อน ข้อที่ยาว 3 บรรทัดจะได้ไม่ดูเหมือนเลขลอยอยู่กลางอากาศ */
+.fix__steps li {
+  counter-increment: step;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+}
+
+.fix__steps li::before {
+  content: counter(step);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--s-5);
+  height: var(--s-5);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border-radius: 50%;
+}
