@@ -24,9 +24,14 @@
   letter-spacing: -0.5px;
 }
 
-.app__history-btn {
+.app__nav {
   position: absolute;
   right: 0;
+  display: flex;
+  gap: 6px;
+}
+
+.app__nav-btn {
   padding: 8px 14px;
   font-size: 0.8125rem;
   font-weight: 600;
@@ -38,9 +43,10 @@
   min-height: 36px;
 }
 
-.app__history-btn:hover {
-  background: var(--color-border);
-  color: var(--color-text);
+.app__nav-btn--active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
 }
 
 .app__main {
