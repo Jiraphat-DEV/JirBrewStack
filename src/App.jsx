@@ -4,6 +4,7 @@ import { computeRecipe, defaultPicks } from './data/brew.js';
 import Worksheet from './components/Worksheet.jsx';
 import RecipeCard from './components/RecipeCard.jsx';
 import GrindConverter from './components/GrindConverter.jsx';
+import FixTable from './components/FixTable.jsx';
 import './App.css';
 
 export default function App() {
@@ -49,7 +50,7 @@ export default function App() {
 
       <main className="app__main">
         {view === 'timer' && <p>ตัวจับเวลา (ยังไม่ได้ทำ)</p>}
-        {view === 'fix' && <p>ตารางแก้รส (ยังไม่ได้ทำ)</p>}
+        {view === 'fix' && <FixTable device={input.device} />}
         {view === 'worksheet' && (
           <>
             <Worksheet input={input} onChange={changeInput} />

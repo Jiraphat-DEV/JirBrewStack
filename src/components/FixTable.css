@@ -1,0 +1,43 @@
+.fix {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fix__caption {
+  padding: 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-warning);
+  background: var(--color-surface);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-sm);
+}
+
+.fix__intro {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.fix__card {
+  padding: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.fix__symptom {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.fix__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 20px;
+  font-size: 0.8125rem;
+  color: var(--color-text);
+}
