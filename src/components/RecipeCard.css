@@ -97,7 +97,7 @@ input[type='range'].recipe__slider {
 }
 
 .recipe__note--warning {
-  color: var(--color-warning);
+  color: var(--color-warning-text);
   font-weight: 600;
 }
 

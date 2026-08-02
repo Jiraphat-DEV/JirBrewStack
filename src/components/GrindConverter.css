@@ -48,5 +48,5 @@
 
 .converter__warning {
   font-size: 0.6875rem;
-  color: var(--color-warning);
+  color: var(--color-warning-text);
 }

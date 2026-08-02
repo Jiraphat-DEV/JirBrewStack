@@ -64,13 +64,6 @@
   margin-top: 2px;
 }
 
-.timer-step__preview {
-  font-size: 0.75rem;
-  color: var(--color-primary);
-  margin-top: 2px;
-  font-weight: 500;
-}
-
 .timer-step__time {
   font-size: 0.875rem;
   font-weight: 600;
