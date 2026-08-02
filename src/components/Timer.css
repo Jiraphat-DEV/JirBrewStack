@@ -25,17 +25,7 @@
   color: var(--color-text);
 }
 
-.timer__method {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.timer__method-icon {
-  font-size: 1.25rem;
-}
-
-.timer__method-name {
+.timer__device {
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-text);
@@ -185,4 +175,15 @@
 
 body.step-change {
   animation: flash 0.5s ease;
+}
+
+.timer__summary {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.timer__control-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+  transform: none;
 }

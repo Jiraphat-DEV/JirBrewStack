@@ -5,6 +5,7 @@ import Worksheet from './components/Worksheet.jsx';
 import RecipeCard from './components/RecipeCard.jsx';
 import GrindConverter from './components/GrindConverter.jsx';
 import FixTable from './components/FixTable.jsx';
+import Timer from './components/Timer.jsx';
 import './App.css';
 
 export default function App() {
@@ -49,7 +50,9 @@ export default function App() {
       </header>
 
       <main className="app__main">
-        {view === 'timer' && <p>ตัวจับเวลา (ยังไม่ได้ทำ)</p>}
+        {view === 'timer' && (
+          <Timer recipe={recipe} picks={picks} onBack={() => setView('worksheet')} />
+        )}
         {view === 'fix' && <FixTable device={input.device} />}
         {view === 'worksheet' && (
           <>
