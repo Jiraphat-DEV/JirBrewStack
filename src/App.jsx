@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import rules from './data/brewing-rules.js';
 import { computeRecipe, defaultPicks } from './data/brew.js';
+import Worksheet from './components/Worksheet.jsx';
 import './App.css';
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
         <nav className="app__nav">
           <button
             type="button"
+            aria-current={view === 'worksheet' ? 'page' : undefined}
             className={`app__nav-btn${view === 'worksheet' ? ' app__nav-btn--active' : ''}`}
             onClick={() => setView('worksheet')}
           >
@@ -34,6 +36,7 @@ export default function App() {
           </button>
           <button
             type="button"
+            aria-current={view === 'fix' ? 'page' : undefined}
             className={`app__nav-btn${view === 'fix' ? ' app__nav-btn--active' : ''}`}
             onClick={() => setView('fix')}
           >
@@ -46,11 +49,13 @@ export default function App() {
         {view === 'timer' && <p>ตัวจับเวลา (ยังไม่ได้ทำ)</p>}
         {view === 'fix' && <p>ตารางแก้รส (ยังไม่ได้ทำ)</p>}
         {view === 'worksheet' && (
-          <p>
-            {rules[input.device].label} · {recipe.dose} g · {recipe.water} g ·{' '}
-            {recipe.temp.join('-')} องศา · Mavo {recipe.grind.join('-')} · pick{' '}
-            {JSON.stringify(picks)}
-          </p>
+          <>
+            <Worksheet input={input} onChange={changeInput} />
+            <p>
+              {recipe.dose} g · {recipe.water} g · {recipe.temp.join('-')} องศา · Mavo{' '}
+              {recipe.grind.join('-')}
+            </p>
+          </>
         )}
       </main>
     </div>
