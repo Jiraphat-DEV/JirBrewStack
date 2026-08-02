@@ -25,7 +25,7 @@ export default function GrindConverter() {
                 value={clicks[grinder.key]}
                 onChange={(e) => setClicks((prev) => ({ ...prev, [grinder.key]: e.target.value }))}
               />
-              <span className="converter__result">{mavo === null ? '' : `Mavo ${mavo.toFixed(1)}`}</span>
+              <output className="converter__result" htmlFor={`converter-${grinder.key}`} aria-live="polite">{mavo === null ? '' : `Mavo ${mavo.toFixed(1)}`}</output>
             </div>
             {grinder.warning && <p className="converter__warning">{grinder.warning}</p>}
           </div>
