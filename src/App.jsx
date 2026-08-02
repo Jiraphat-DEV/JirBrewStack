@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import rules from './data/brewing-rules.js';
 import { computeRecipe, defaultPicks } from './data/brew.js';
 import Worksheet from './components/Worksheet.jsx';
@@ -25,31 +25,38 @@ export default function App() {
 
   const changePick = (field, value) => setPicks((prev) => ({ ...prev, [field]: value }));
 
+  // ปุ่ม "เริ่มชง" อยู่ท้ายหน้าสูตรที่ยาวมาก ถ้าไม่รีเซ็ต scroll กดแล้วจะโผล่กลางหน้า timer แทนที่จะเห็นเวลาก่อน
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view]);
+
   return (
     <div className="app">
-      <header className="app__header">
-        <h1 className="app__title">JirBrewStack</h1>
-        <nav className="app__nav">
-          {/* timer เข้าได้ทางเดียวคือปุ่ม "เริ่มชง" บน RecipeCard (อยู่ในหน้าสูตร) ไม่ใช่ทางปุ่ม nav
-              ระหว่างชง header จึงยังนับปุ่ม "สูตร" เป็นหน้าปัจจุบัน ไม่ใช่ไม่มีปุ่มไหนถูกเลือกเลย */}
-          <button
-            type="button"
-            aria-current={view === 'worksheet' || view === 'timer' ? 'page' : undefined}
-            className={`app__nav-btn${view === 'worksheet' || view === 'timer' ? ' app__nav-btn--active' : ''}`}
-            onClick={() => setView('worksheet')}
-          >
-            สูตร
-          </button>
-          <button
-            type="button"
-            aria-current={view === 'fix' ? 'page' : undefined}
-            className={`app__nav-btn${view === 'fix' ? ' app__nav-btn--active' : ''}`}
-            onClick={() => setView('fix')}
-          >
-            แก้รส
-          </button>
-        </nav>
-      </header>
+      {/* ระหว่างชงซ่อน header ทั้งแถบ ให้ timer ได้เต็มจอและไม่มีทางกดหลุดออกไปหน้าอื่นโดยไม่ตั้งใจ
+          ทางออกมีทางเดียวคือปุ่ม "ย้อนกลับ" ใน Timer เอง (ทางเข้าก็ทางเดียวคือ "เริ่มชง" บน RecipeCard) */}
+      {view !== 'timer' && (
+        <header className="app__header">
+          <h1 className="app__title">JirBrewStack</h1>
+          <nav className="app__nav">
+            <button
+              type="button"
+              aria-current={view === 'worksheet' ? 'page' : undefined}
+              className={`app__nav-btn${view === 'worksheet' ? ' app__nav-btn--active' : ''}`}
+              onClick={() => setView('worksheet')}
+            >
+              สูตร
+            </button>
+            <button
+              type="button"
+              aria-current={view === 'fix' ? 'page' : undefined}
+              className={`app__nav-btn${view === 'fix' ? ' app__nav-btn--active' : ''}`}
+              onClick={() => setView('fix')}
+            >
+              แก้รส
+            </button>
+          </nav>
+        </header>
+      )}
 
       <main className="app__main">
         {view === 'timer' && (
