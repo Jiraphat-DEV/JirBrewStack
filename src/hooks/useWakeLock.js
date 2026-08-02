@@ -8,13 +8,17 @@ export function useWakeLock(active) {
   useEffect(() => {
     if (!active || !('wakeLock' in navigator)) return undefined;
     let cancelled = false;
+    // กันเรียก acquire ซ้อนระหว่างที่ request ก่อนหน้ายังไม่ resolve
+    // lockRef.current เป็น null อยู่จนกว่า await จะเสร็จ เช็คแค่ lockRef ไม่พอ
+    let pending = false;
 
     const acquire = async () => {
-      if (lockRef.current) return;
+      if (lockRef.current || pending) return;
+      pending = true;
       try {
         const lock = await navigator.wakeLock.request('screen');
         if (cancelled) {
-          lock.release();
+          lock.release().catch(() => {});
           return;
         }
         lock.addEventListener('release', () => {
@@ -23,6 +27,8 @@ export function useWakeLock(active) {
         lockRef.current = lock;
       } catch {
         // ponytail: ไม่รองรับหรือถูกปฏิเสธ ปล่อยเงียบ timer ทำงานต่อปกติ
+      } finally {
+        pending = false;
       }
     };
 
