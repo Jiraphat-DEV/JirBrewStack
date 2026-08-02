@@ -1,5 +1,6 @@
 // ตรรกะการคำนวณสูตรทั้งหมด ไม่มี React ไม่มี I/O ทุกฟังก์ชันเป็น pure
-// ตัวเลขทั้งหมดอยู่ใน brewing-rules.js ไฟล์นี้ไม่มีตัวเลขของกาแฟเลย
+// ตัวเลขและกฎของสูตรกาแฟ (base/roast/process/altitude/origin) อยู่ใน brewing-rules.js ทั้งหมด
+// ไฟล์นี้เองยังถือค่าคงที่สองอย่าง: ตัวประกอบแปลงหน่วยบด (GRINDERS) และชื่อ/ข้อความ instruction ของแต่ละ step ใน timer
 
 import rules from './brewing-rules.js';
 

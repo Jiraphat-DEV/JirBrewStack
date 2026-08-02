@@ -99,6 +99,27 @@ test('ทุกตัวเลือกใน options มีครบทุก s
   );
 });
 
+// options ถูกเทสวนทั้งไฟล์อยู่แล้ว (เทส 16) แต่ rules.fixes ไม่ผ่านเส้นทางนั้นเลยเพราะไม่ใช่ patch
+// ของ computeRecipe การลบหรือพิมพ์ผิด fixes.delter จะผ่านทั้ง 36 เทสเดิมแล้วไปพังตอน runtime ที่ FixTable แทน
+test('rules.fixes มีอาการของทุกเครื่อง และแต่ละอาการมี symptom กับ steps ที่ไม่ว่าง', () => {
+  for (const device of DEVICES) {
+    const entries = rules.fixes[device];
+    assert.ok(Array.isArray(entries) && entries.length > 0, `rules.fixes.${device} ต้องเป็น array ที่ไม่ว่าง`);
+    for (const entry of entries) {
+      assert.equal(typeof entry.symptom, 'string', `rules.fixes.${device}: symptom ต้องเป็น string`);
+      assert.ok(entry.symptom.length > 0, `rules.fixes.${device}: symptom ต้องไม่ว่าง`);
+      assert.ok(
+        Array.isArray(entry.steps) && entry.steps.length > 0,
+        `rules.fixes.${device}.${entry.symptom}: steps ต้องเป็น array ที่ไม่ว่าง`,
+      );
+      for (const step of entry.steps) {
+        assert.equal(typeof step, 'string', `rules.fixes.${device}.${entry.symptom}: step ต้องเป็น string`);
+        assert.ok(step.length > 0, `rules.fixes.${device}.${entry.symptom}: step ต้องไม่ว่าง`);
+      }
+    }
+  }
+});
+
 import { computeRecipe, COARSE_NOTE } from './brew.js';
 
 const recipeOf = (device, roast, process, altitude, origin) =>
@@ -432,6 +453,24 @@ test('splitStrokes แบ่งเป็นหน่วยละ 25 ml แล้
     assert.equal(ml.length, strokes);
     assert.equal(ml.reduce((a, b) => a + b, 0), 150, `strokes ${strokes} ผลรวมต้องเป็น 150`);
   }
+});
+
+// rules.delter.base.strokes เป็น field เดียวในไฟล์ข้อมูลที่ไม่ผ่าน normalizeRange (ไม่ใช่ RANGE_FIELDS)
+// และเป็น field ที่หน้าจอแก้รสสั่งให้เจ้าของแก้เองตรงๆ (ตั้ง strokes: 3) เทสนี้กันไม่ให้ค่าที่แก้แล้วทำ
+// splitStrokes พังเงียบๆ (0 ให้ step ว่าง, ไม่ใช่จำนวนเต็มทำให้เศษหาย, มากไปทำให้แต่ละจังหวะเหลือ 0 ml)
+test('rules.delter.base.strokes เป็นจำนวนเต็มอย่างน้อย 1 และ splitStrokes แบ่งน้ำได้ครบตามที่ตั้งไว้จริง', () => {
+  const { water, preinfusionMark, strokes } = rules.delter.base;
+  assert.ok(
+    Number.isInteger(strokes) && strokes >= 1,
+    `rules.delter.base.strokes ต้องเป็นจำนวนเต็มอย่างน้อย 1 แต่ได้ ${JSON.stringify(strokes)}`,
+  );
+  const ml = splitStrokes(water, preinfusionMark, strokes);
+  assert.equal(ml.length, strokes);
+  assert.equal(
+    ml.reduce((a, b) => a + b, 0),
+    water - preinfusionMark,
+    'ผลรวมน้ำต่อจังหวะต้องเท่ากับ water - preinfusionMark พอดี ไม่หายไม่เกิน',
+  );
 });
 
 const stepsFor = (device, overrides = {}) => {
