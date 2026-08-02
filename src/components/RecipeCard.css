@@ -1,0 +1,108 @@
+.recipe {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.recipe__facts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.recipe__fact-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.recipe__fact-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.recipe__fact-note {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+}
+
+.recipe__slider-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.recipe__slider-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.recipe__slider-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ต้องเจาะจงกว่า input[type="range"] ใน index.css จึงจะทับพื้นหลังได้ */
+input[type='range'].recipe__slider {
+  margin: 6px 0 2px;
+  background: linear-gradient(
+    to right,
+    var(--color-border) 0 var(--band-start),
+    var(--color-accent) var(--band-start) var(--band-end),
+    var(--color-border) var(--band-end) 100%
+  );
+}
+
+.recipe__slider-hint {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+}
+
+.recipe__statics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+}
+
+.recipe__notes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--color-text);
+}
+
+.recipe__note--warning {
+  color: var(--color-warning);
+  font-weight: 600;
+}
+
+.recipe__start {
+  padding: 16px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: white;
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  min-height: 56px;
+  transition: all var(--transition-fast);
+}
+
+.recipe__start:hover {
+  background: var(--color-accent);
+}

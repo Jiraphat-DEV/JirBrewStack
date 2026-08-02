@@ -2,6 +2,7 @@ import { useState } from 'react';
 import rules from './data/brewing-rules.js';
 import { computeRecipe, defaultPicks } from './data/brew.js';
 import Worksheet from './components/Worksheet.jsx';
+import RecipeCard from './components/RecipeCard.jsx';
 import './App.css';
 
 export default function App() {
@@ -51,10 +52,12 @@ export default function App() {
         {view === 'worksheet' && (
           <>
             <Worksheet input={input} onChange={changeInput} />
-            <p>
-              {recipe.dose} g · {recipe.water} g · {recipe.temp.join('-')} องศา · Mavo{' '}
-              {recipe.grind.join('-')}
-            </p>
+            <RecipeCard
+              recipe={recipe}
+              picks={picks}
+              onPick={changePick}
+              onStart={() => setView('timer')}
+            />
           </>
         )}
       </main>
