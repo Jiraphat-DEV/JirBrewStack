@@ -412,3 +412,85 @@ test('GRINDERS มีข้อความเตือนบนเส้นท�
   const c40 = GRINDERS.find((g) => g.key === 'c40');
   assert.equal(c40.warning, '');
 });
+
+import { buildTimerSteps, splitStrokes, formatTime } from './brew.js';
+
+test('formatTime ให้รูปแบบ m:ss', () => {
+  assert.equal(formatTime(105), '1:45');
+  assert.equal(formatTime(0), '0:00');
+  assert.equal(formatTime(60), '1:00');
+  assert.equal(formatTime(9), '0:09');
+});
+
+// เทส 15 (ส่วนการแบ่งน้ำ) - เศษไปจังหวะแรก ไม่ใช่จังหวะสุดท้าย
+test('splitStrokes แบ่งเป็นหน่วยละ 25 ml แล้วแจกเศษให้จังหวะแรกๆ', () => {
+  assert.deepStrictEqual(splitStrokes(200, 50, 2), [75, 75]);
+  assert.deepStrictEqual(splitStrokes(200, 50, 3), [50, 50, 50]);
+  assert.deepStrictEqual(splitStrokes(200, 50, 4), [50, 50, 25, 25]);
+  for (const strokes of [1, 2, 3, 4, 5, 6]) {
+    const ml = splitStrokes(200, 50, strokes);
+    assert.equal(ml.length, strokes);
+    assert.equal(ml.reduce((a, b) => a + b, 0), 150, `strokes ${strokes} ผลรวมต้องเป็น 150`);
+  }
+});
+
+const stepsFor = (device, overrides = {}) => {
+  const combo = { device, roast: 'agtron80_95', process: 'washed', altitude: 'mid', origin: 'colombia' };
+  const recipe = { ...computeRecipe(combo), ...overrides };
+  const picks = defaultPicks(recipe);
+  return { recipe, picks, ...buildTimerSteps(recipe, picks) };
+};
+
+// เทส 15 - โครงสร้างและเวลา
+test('AeroPress ได้ 4 step และ startTime สะสมถูกต้อง', () => {
+  const { steps, totalTime, picks } = stepsFor('aeropress');
+  assert.equal(steps.length, 4);
+  assert.equal(steps[0].startTime, 0);
+  assert.equal(steps[1].duration, picks.steep);
+  for (let i = 1; i < steps.length; i += 1) {
+    assert.equal(steps[i].startTime, steps[i - 1].startTime + steps[i - 1].duration, `step ${i}`);
+  }
+  assert.equal(totalTime, steps.reduce((sum, s) => sum + s.duration, 0));
+});
+
+test('Delter ได้ 3 + 2 * strokes step และไม่มีพักต่อท้ายจังหวะสุดท้าย', () => {
+  for (const strokes of [2, 3]) {
+    const { steps, picks } = stepsFor('delter', { strokes });
+    assert.equal(steps.length, 3 + 2 * strokes, `strokes ${strokes}`);
+    assert.equal(steps[2].duration, picks.preinfusionWait);
+    const presses = steps.filter((s) => s.name.startsWith('จังหวะ'));
+    const rests = steps.filter((s) => s.name.startsWith('พัก'));
+    assert.equal(presses.length, strokes);
+    assert.equal(rests.length, strokes - 1);
+    for (const s of presses) assert.equal(s.duration, picks.pressSpeed);
+    for (const s of rests) assert.equal(s.duration, picks.restBetween);
+    assert.ok(steps[steps.length - 1].name.includes('bypass'));
+  }
+});
+
+test('น้ำต่อจังหวะโผล่ในข้อความของแต่ละจังหวะ', () => {
+  const two = stepsFor('delter', { strokes: 2 }).steps.filter((s) => s.name.startsWith('จังหวะ'));
+  assert.ok(two[0].instruction.includes('75'));
+  assert.ok(two[1].instruction.includes('75'));
+  const three = stepsFor('delter', { strokes: 3 }).steps.filter((s) => s.name.startsWith('จังหวะ'));
+  for (const s of three) assert.ok(s.instruction.includes('50'));
+});
+
+test('instruction เป็น string ที่ substitute ค่ามาแล้ว ไม่ใช่ closure', () => {
+  for (const device of DEVICES) {
+    for (const s of stepsFor(device).steps) {
+      assert.equal(typeof s.name, 'string');
+      assert.equal(typeof s.instruction, 'string');
+      assert.ok(s.instruction.length > 0);
+      assert.ok(Number.isFinite(s.duration) && s.duration > 0, `${s.name} duration`);
+    }
+  }
+});
+
+// เวลารวมไม่นับ step bypass ของ combo ตั้งต้น ต้องลงกรอบที่ Notion เขียน
+test('เวลารวมถึงจบการกด (ไม่รวม bypass) ลงกรอบของ Notion', () => {
+  const ap = stepsFor('aeropress');
+  assert.equal(ap.steps[ap.steps.length - 1].startTime, 150); // 15 + 105 + 30 = 2:30
+  const dp = stepsFor('delter');
+  assert.equal(dp.steps[dp.steps.length - 1].startTime, 145); // 20 + 10 + 50 + 25 + 15 + 25 = 2:25
+});

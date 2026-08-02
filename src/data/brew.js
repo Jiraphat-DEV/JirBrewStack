@@ -199,3 +199,106 @@ export function toMavo(clicks, grinder) {
   if (clicks === null || clicks === undefined || !Number.isFinite(n) || n < 0) return null;
   return roundHalf(n * g.factor);
 }
+
+// ponytail: สำเนาเล็กๆ ของ formatTime ที่ useTimer มี เพื่อให้ brew.js ไม่ต้องพึ่ง React
+export function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${String(secs).padStart(2, '0')}`;
+}
+
+// แบ่งน้ำเป็นหน่วยละ 25 ml (ขีดที่มีจริงบนสเกล PRESS) แล้วแจกเท่าๆ กัน
+// เศษให้จังหวะแรกๆ จังหวะละ 1 หน่วย ถ้ายกไปท้ายจะได้ 25/25/25/75 ที่ 4 จังหวะ
+// ซึ่งย้อนแย้งกับเหตุผลที่แบ่งหลายจังหวะตั้งแต่แรก
+export function splitStrokes(water, preinfusionMark, strokes) {
+  const total = water - preinfusionMark;
+  const units = Math.floor(total / 25);
+  const per = Math.floor(units / strokes);
+  const remainder = units - per * strokes;
+  const ml = Array.from({ length: strokes }, (_, i) => (per + (i < remainder ? 1 : 0)) * 25);
+  ml[strokes - 1] += total - units * 25;
+  return ml;
+}
+
+function aeropressSteps(r, p, timing) {
+  return [
+    {
+      name: 'เทน้ำ',
+      instruction: `ใส่กาแฟ ${r.dose} g เทน้ำ ${p.temp} องศา ให้ครบ ${r.water} g แล้วคนเบา 2-3 ที`,
+      duration: timing.pour,
+    },
+    {
+      name: 'แช่',
+      instruction: `ปิดฝา แช่ไว้ ${formatTime(p.steep)}`,
+      duration: p.steep,
+    },
+    {
+      name: 'กด',
+      instruction: 'กลับด้าน กดช้าและเบา อย่าฝืน',
+      duration: r.pressDuration,
+    },
+    {
+      name: 'เติม bypass',
+      instruction: `เติมน้ำร้อน ${p.bypass} g ชิมไปเติมไป`,
+      duration: timing.bypassPour,
+    },
+  ];
+}
+
+function delterSteps(r, p, timing) {
+  const ml = splitStrokes(r.water, r.preinfusionMark, r.strokes);
+  const steps = [
+    {
+      name: 'เตรียม',
+      instruction: `ใส่ผงกาแฟ ${r.dose} g เคาะข้างเครื่องให้หน้าผงเรียบ แล้วเทน้ำ ${p.temp} องศา ${r.water} g ถึงขีด FILL`,
+      duration: timing.fill,
+    },
+    {
+      name: 'Pre-infusion',
+      instruction: `ยกถึงขีด ${r.preinfusionMark} แล้วกดจนสุด`,
+      duration: timing.preinfusionPress,
+    },
+    {
+      name: 'รอ',
+      instruction: `รอให้ผงอิ่มน้ำ ${formatTime(p.preinfusionWait)}`,
+      duration: p.preinfusionWait,
+    },
+  ];
+  ml.forEach((amount, i) => {
+    if (i > 0) {
+      steps.push({
+        name: `พัก ${i}`,
+        instruction: 'ปล่อยให้น้ำซึมผ่านชั้นกาแฟ อย่าเพิ่งกด',
+        duration: p.restBetween,
+      });
+    }
+    steps.push({
+      name: `จังหวะ ${i + 1}`,
+      instruction: `ยกถึงขีด ${amount} แล้วกดช้าๆ ให้ครบ ${formatTime(p.pressSpeed)}`,
+      duration: p.pressSpeed,
+    });
+  });
+  steps.push({
+    name: 'เติม bypass',
+    instruction: `เติมน้ำอุณหภูมิห้อง ${p.bypass} g`,
+    duration: timing.bypassPour,
+  });
+  return steps;
+}
+
+// useTimer หา step ปัจจุบันจาก startTime แบบสะสม (absolute) และไม่อ่าน duration เลย
+// timing (ระยะเวลา step คงที่) มาจาก rules[device].timing ไม่ใช่จาก recipe เพราะเป็นเรื่องจังหวะ
+// การชง ไม่ใช่คุณสมบัติของกาแฟ recipe เลยไม่ควรพก field นี้ไปด้วย
+export function buildTimerSteps(recipe, picks) {
+  const timing = rules[recipe.device].timing;
+  const raw = recipe.device === 'aeropress'
+    ? aeropressSteps(recipe, picks, timing)
+    : delterSteps(recipe, picks, timing);
+  let elapsed = 0;
+  const steps = raw.map((step) => {
+    const withStart = { ...step, startTime: elapsed };
+    elapsed += step.duration;
+    return withStart;
+  });
+  return { steps, totalTime: elapsed };
+}
