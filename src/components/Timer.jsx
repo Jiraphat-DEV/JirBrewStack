@@ -32,36 +32,42 @@ export default function Timer({ recipe, picks, onBack }) {
     <div className="timer">
       <div className="timer__header">
         <button type="button" className="timer__back-btn" onClick={onBack}>
+          <span className="timer__back-icon" aria-hidden="true">‹</span>
           ย้อนกลับ
         </button>
         <span className="timer__device">{rules[recipe.device].label}</span>
       </div>
 
-      <div className="timer__summary">
-        <div className="timer__summary-item">
-          <span className="timer__summary-value">{recipe.dose} g</span>
-          <span className="timer__summary-label">กาแฟ</span>
+      <div className="timer__summary stats">
+        <div className="stat">
+          <span className="stat__value">{recipe.dose} g</span>
+          <span className="stat__label">กาแฟ</span>
         </div>
-        <div className="timer__summary-item">
-          <span className="timer__summary-value">{recipe.water} g</span>
-          <span className="timer__summary-label">น้ำ</span>
+        <div className="stat">
+          <span className="stat__value">{recipe.water} g</span>
+          <span className="stat__label">น้ำ</span>
         </div>
-        <div className="timer__summary-item">
-          <span className="timer__summary-value">{picks.temp} องศา</span>
-          <span className="timer__summary-label">อุณหภูมิ</span>
+        <div className="stat">
+          <span className="stat__value">{picks.temp} องศา</span>
+          <span className="stat__label">อุณหภูมิ</span>
         </div>
-        <div className="timer__summary-item">
-          <span className="timer__summary-value">{picks.grind.toFixed(1)}</span>
-          <span className="timer__summary-label">Mavo</span>
+        <div className="stat">
+          <span className="stat__value">{picks.grind.toFixed(1)}</span>
+          <span className="stat__label">Mavo</span>
         </div>
       </div>
 
       <div className={`timer__display${timer.isComplete ? ' timer__display--complete' : ''}`}>
+        {/* รวมสถานะขั้นตอนปัจจุบันไว้ในกล่องเดียวกับเวลา จะได้อ่านสถานะทั้งหมดได้จากจุดเดียวตอนมือไม่ว่าง */}
+        <div className="timer__step-indicator">
+          {timer.isComplete
+            ? 'ชงเสร็จแล้ว'
+            : `ขั้นที่ ${timer.currentStepIndex + 1}/${steps.length} · ${timer.currentStep.name}`}
+        </div>
         <div className="timer__time">{timer.formatTime(timer.totalTimeRemaining)}</div>
         <div className="timer__progress-bar">
           <div className="timer__progress-fill" style={{ width: `${timer.progress}%` }} />
         </div>
-        {timer.isComplete && <div className="timer__complete-msg">ชงเสร็จแล้ว</div>}
       </div>
 
       <div className="timer__steps">
