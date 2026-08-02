@@ -62,6 +62,9 @@ function RangeSlider({ label, format, value, range, bounds, onChange }) {
 export default function RecipeCard({ recipe, picks, onPick, onStart }) {
   const bounds = rules[recipe.device].sliderBounds;
   const ratioFinal = `1:${recipe.ratioFinal[0].toFixed(1)} ถึง 1:${recipe.ratioFinal[1].toFixed(1)}`;
+  // ต้องคำนวณจาก picks.bypass (ค่าที่เลื่อนจริง) ไม่ใช่ recipe.ratioFinal ซึ่งมาจากช่วง bypass ที่แนะนำเท่านั้น
+  // slider bypass กว้างกว่าช่วงแนะนำโดยตั้งใจ (ดูตารางแก้รส) ratioFinal เพียงอย่างเดียวจึงตามค่าจริงที่เลือกไม่ทัน
+  const ratioLive = (recipe.water + picks.bypass) / recipe.dose;
 
   return (
     <section className="recipe">
@@ -76,7 +79,7 @@ export default function RecipeCard({ recipe, picks, onPick, onStart }) {
           <Fact
             label="น้ำกาแฟที่ได้"
             value={`~${recipe.yield} g`}
-            note="ต่ำกว่า 150 g คือกดไม่สุด เกิน 185 g คือน้ำเลี่ยงชั้นกาแฟ"
+            note={recipe.yieldNote}
           />
         )}
         <Fact
@@ -98,7 +101,10 @@ export default function RecipeCard({ recipe, picks, onPick, onStart }) {
       ))}
 
       <div className="recipe__statics">
-        <span>ratio รวม bypass {ratioFinal} (ของน้ำที่เทเข้า ไม่ใช่ปริมาณน้ำในถ้วย)</span>
+        <span>
+          ratio ตอนนี้ (ตาม bypass ที่เลื่อนไว้): <strong className="recipe__ratio-live">1:{ratioLive.toFixed(1)}</strong>
+        </span>
+        <span>ช่วงแนะนำ {ratioFinal} (ของน้ำที่เทเข้า ไม่ใช่ปริมาณน้ำในถ้วย)</span>
         <span>ฟิลเตอร์: {recipe.filter}</span>
         {recipe.bloom && <span>{recipe.bloom}</span>}
         {recipe.strokes && <span>แบ่งกด {recipe.strokes} จังหวะ</span>}

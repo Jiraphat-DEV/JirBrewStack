@@ -83,6 +83,11 @@ input[type='range'].recipe__slider {
   padding-top: 12px;
 }
 
+.recipe__ratio-live {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
 .recipe__notes {
   display: flex;
   flex-direction: column;
