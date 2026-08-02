@@ -30,10 +30,12 @@ export default function App() {
       <header className="app__header">
         <h1 className="app__title">JirBrewStack</h1>
         <nav className="app__nav">
+          {/* timer เข้าได้ทางเดียวคือปุ่ม "เริ่มชง" บน RecipeCard (อยู่ในหน้าสูตร) ไม่ใช่ทางปุ่ม nav
+              ระหว่างชง header จึงยังนับปุ่ม "สูตร" เป็นหน้าปัจจุบัน ไม่ใช่ไม่มีปุ่มไหนถูกเลือกเลย */}
           <button
             type="button"
-            aria-current={view === 'worksheet' ? 'page' : undefined}
-            className={`app__nav-btn${view === 'worksheet' ? ' app__nav-btn--active' : ''}`}
+            aria-current={view === 'worksheet' || view === 'timer' ? 'page' : undefined}
+            className={`app__nav-btn${view === 'worksheet' || view === 'timer' ? ' app__nav-btn--active' : ''}`}
             onClick={() => setView('worksheet')}
           >
             สูตร
