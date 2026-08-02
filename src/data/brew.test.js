@@ -271,6 +271,9 @@ test('Delter สูงกว่า AeroPress 3 องศาทุกคู่ �
 });
 
 // เทส 8 - temp ทุก combo อยู่ในกรอบและไม่กลับหัว
+// assertion temp[0] <= temp[1] เฝ้าโค้ดใน computeRecipe ไม่ใช่เฝ้าข้อมูล กันไม่ให้ใครเปลี่ยน tempClamp
+// เป็น interval intersection (max(min,lo) คู่ min(max,hi)) แทนบีบทีละปลาย บั๊กนี้เคยเจอจริงตอน
+// design review ทำช่วงกลับหัว 21 จาก 864 สูตร ส่วนเช็ค slider bounds ครึ่งหลังของเทสนี้เฝ้าข้อมูลจริง มาร์จิ้นตอนนี้แค่ 1-2 องศา
 test('temp ทุก combo อยู่ในกรอบและ min ไม่เกิน max', () => {
   for (const device of DEVICES) {
     const b = rules[device].sliderBounds.temp;
@@ -283,6 +286,8 @@ test('temp ทุก combo อยู่ในกรอบและ min ไม่
 });
 
 // เทส 9 - grind ปัด 0.5 เสมอ
+// เทสนี้เฝ้าโค้ด ไม่ใช่เฝ้าข้อมูล กันไม่ให้ใครถอดหรือลด roundHalf ออกจาก grind ใน computeRecipe
+// ปัด 0.5 คือ step ละเอียดสุดที่หมุนเครื่องบดจริงแล้วอ่านค่าได้ในครัว เป็นหลักการที่ตั้งใจไว้ ไม่ใช่บังเอิญ
 test('grind ทุก combo เป็นทวีคูณของ 0.5 และ min ไม่เกิน max', () => {
   for (const device of DEVICES) {
     for (const combo of ALL_COMBOS(device)) {
