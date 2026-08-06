@@ -5,6 +5,7 @@ import {
   normalizeRange,
   RANGE_FIELDS,
   KNOWN_PATCH_FIELDS,
+  ADD_FIELDS,
 } from './brew.js';
 
 const DEVICES = ['aeropress', 'delter'];
@@ -143,11 +144,29 @@ test('steepAdd สะสมจากทั้ง roast และ altitude', () =
   assert.deepStrictEqual(r.steep, [150, 180]);
 });
 
-// เทส 5 - roast เป็นเจ้าของ preinfusionWait แต่ผู้เดียว และ preinfusionAdd บวกทีหลัง
-test('Delter preinfusionWait มาจาก roast แล้วบวกด้วย altitude', () => {
-  const r = recipeOf('delter', 'agtron95plus', 'washed', 'high', 'colombia');
-  assert.deepStrictEqual(r.preinfusionWait, [75, 90]);
-  assert.deepStrictEqual(r.grind, [5.0, 5.0]);
+// เทส 5 - Delter base ตรงตามผลวิจัย 2026-08-06
+// ratioConcentrate คือกรัมน้ำที่ผ่านชั้นกาแฟต่อกรัมกาแฟ ซึ่งเป็นตัวแปรที่มีอำนาจสูงสุดบนเครื่อง
+// percolation (Schmieder 2023) เลข 11.1 มาจาก dose 18 ที่น้ำ 200 ซึ่งเส้น FILL ตรึงไว้
+test('Delter base ตรงตาม spec 2026-08-06', () => {
+  const r = recipeOf('delter', 'agtron80_95', 'washed', 'mid', 'colombia');
+  assert.equal(r.dose, 18);
+  assert.equal(r.water, 200);
+  assert.deepStrictEqual(r.temp, [89, 89]);
+  assert.deepStrictEqual(r.grind, [6.0, 6.0]);
+  assert.deepStrictEqual(r.preinfusionWait, [25, 25]);
+  assert.deepStrictEqual(r.pressSpeed, [25, 25]);
+  assert.ok(Math.abs(r.ratioConcentrate - 11.11) < 0.01, `ratioConcentrate ${r.ratioConcentrate}`);
+});
+
+// preinfusionWait กับ pressSpeed เป็นค่าคงที่ของเทคนิค ไม่ใช่ตัวแปรของเมล็ดอีกต่อไป
+// เพราะค่าความยืดหยุ่นของเวลาสัมผัสอยู่ที่ราว 0.08 (Schmieder 2023) เปลี่ยน 2.9 เท่าขยับ TDS แค่ 5-8%
+// เทสนี้กันไม่ให้ใครเผลอเอาตารางรายเมล็ดกลับมาโดยไม่มีหลักฐานใหม่
+test('ไม่มีขั้นไหนของ Delter แตะ preinfusionWait หรือ pressSpeed', () => {
+  for (const combo of ALL_COMBOS('delter')) {
+    const r = computeRecipe(combo);
+    assert.deepStrictEqual(r.preinfusionWait, [25, 25], `${label(combo)} preinfusionWait`);
+    assert.deepStrictEqual(r.pressSpeed, [25, 25], `${label(combo)} pressSpeed`);
+  }
 });
 
 // เทส 6 - tempClamp เป็นการจำกัดช่วง ไม่ใช่การทับ และไม่กลืน altitude
@@ -188,16 +207,21 @@ test('process ทับ steep ทับทีหลัง roast', () => {
   assert.deepStrictEqual(r.steep, [105, 105]);
 });
 
-// เทส 12 - kenya บวกท้าย ไม่ใช่ทับ
-test('kenya บวก pressSpeed ท้ายสุด ไม่ลบค่าของ process', () => {
-  assert.deepStrictEqual(
-    recipeOf('delter', 'agtron80_95', 'washed', 'mid', 'kenya').pressSpeed,
-    [30, 35],
-  );
-  assert.deepStrictEqual(
-    recipeOf('delter', 'agtron80_95', 'doubleAnaerobic', 'mid', 'kenya').pressSpeed,
-    [20, 25],
-  );
+// เทส 12 - ADD_FIELDS ต้องไม่มีรายการที่ไม่มีใครใช้
+// pressSpeedAdd กับ preinfusionAdd ถูกลบตอนรื้อโมเดล Delter 2026-08-06 เพราะเป็นปุ่มที่ไม่มีอำนาจ
+// เทสนี้กันไม่ให้เหลือ ADD_FIELDS ที่ไม่มี patch ไหนอ้างถึง ซึ่งจะกลายเป็นโค้ดตายที่อ่านแล้วเข้าใจผิด
+test('ทุกรายการใน ADD_FIELDS มีอย่างน้อยหนึ่ง patch ที่ใช้จริง', () => {
+  const used = new Set();
+  for (const device of DEVICES) {
+    for (const stage of ['roast', 'process', 'altitude', 'origin']) {
+      for (const patch of Object.values(rules[device][stage])) {
+        for (const field of Object.keys(patch)) used.add(field);
+      }
+    }
+  }
+  for (const field of Object.keys(ADD_FIELDS)) {
+    assert.ok(used.has(field), `ADD_FIELDS.${field} ไม่มี patch ไหนใช้ ลบทิ้งได้`);
+  }
 });
 
 test('เตือนหยาบกว่า base ขึ้นเมื่อ grind.min มากกว่า base', () => {
@@ -249,17 +273,17 @@ test('มี 432 combo ต่อเครื่อง', () => {
 // เทส 2 - ตาราง combo อุณหภูมิที่ Notion เขียนไว้
 test('ตาราง combo อุณหภูมิตรงทั้ง 6 แถวต่อเครื่อง', () => {
   const table = [
-    ['agtron80_95', 'washed', [88, 88], [91, 91]],
-    ['agtron80_95', 'honey', [88, 88], [91, 91]],
-    ['agtron80_95', 'natural', [87, 87], [90, 90]],
-    ['agtron80_95', 'anaerobic', [85, 85], [88, 88]],
-    ['agtron80_95', 'barrel', [85, 85], [88, 88]],
-    ['agtron80_95', 'cm', [85, 85], [88, 88]],
-    ['agtron80_95', 'yeast', [85, 85], [88, 88]],
-    ['agtron80_95', 'doubleAnaerobic', [82, 85], [86, 88]],
-    ['agtron65_80', 'washed', [90, 90], [93, 93]],
-    ['agtron65_80', 'honey', [90, 90], [93, 93]],
-    ['agtron65_80', 'anaerobic', [87, 87], [90, 90]],
+    ['agtron80_95', 'washed', [88, 88], [89, 89]],
+    ['agtron80_95', 'honey', [88, 88], [89, 89]],
+    ['agtron80_95', 'natural', [87, 87], [88, 88]],
+    ['agtron80_95', 'anaerobic', [85, 85], [86, 86]],
+    ['agtron80_95', 'barrel', [85, 85], [86, 86]],
+    ['agtron80_95', 'cm', [85, 85], [86, 86]],
+    ['agtron80_95', 'yeast', [85, 85], [86, 86]],
+    ['agtron80_95', 'doubleAnaerobic', [82, 85], [83, 86]],
+    ['agtron65_80', 'washed', [90, 90], [91, 91]],
+    ['agtron65_80', 'honey', [90, 90], [91, 91]],
+    ['agtron65_80', 'anaerobic', [87, 87], [88, 88]],
   ];
   for (const [roast, process, ap, delterTemp] of table) {
     assert.deepStrictEqual(
@@ -275,19 +299,33 @@ test('ตาราง combo อุณหภูมิตรงทั้ง 6 แ�
   }
 });
 
-// เทส 3 - Delter สูงกว่า AeroPress 3 องศา
-test('Delter สูงกว่า AeroPress 3 องศาทุกคู่ ยกเว้น doubleAnaerobic ที่เทียบเฉพาะปลาย max', () => {
+// เทส 3 - Delter สูงกว่า AeroPress 1 องศา
+// เดิมห่างกัน 3 องศาเพื่อ "ชดเชยการไม่มี steep" ซึ่งตกไปแล้ว 2026-08-06 ด้วยสองเหตุผล
+//   (ก) มี steep จริง คือช่วงรอหลัง pre-infusion ที่ผงอิ่มน้ำนิ่งอยู่ที่ ratio 1:2
+//   (ข) percolation สกัดมากกว่าต่อวินาที ไม่ใช่น้อยกว่า เพราะน้ำสดไล่ที่ตลอด แรงขับจึงไม่ตก
+// ที่เหลือ 1 องศาไม่ใช่ค่าชดเชย แต่เป็นผลพลอยได้จากการเลือก base 89 ซึ่งลงจาก 91 แค่ 2
+// โดยตั้งใจ เพื่อไม่ให้ลดการสกัดซ้อนกันหลายทางพร้อมกับที่ dose เพิ่มจาก 15 เป็น 18
+// ห้ามตีความว่านี่คือกฎ ถ้าสอบเทียบแล้วต้องขยับ ให้ขยับ base ของ Delter ตัวเดียว อย่าไปผูกกับ AeroPress
+test('Delter สูงกว่า AeroPress 1 องศาทุกคู่', () => {
   for (const roast of Object.keys(rules.aeropress.roast)) {
     for (const process of Object.keys(rules.aeropress.process)) {
       const ap = recipeOf('aeropress', roast, process, 'mid', 'colombia').temp;
       const dp = recipeOf('delter', roast, process, 'mid', 'colombia').temp;
-      assert.equal(dp[1] - ap[1], 3, `${roast}/${process} ปลาย max`);
-      if (process !== 'doubleAnaerobic') {
-        assert.equal(dp[0] - ap[0], 3, `${roast}/${process} ปลาย min`);
-      } else {
-        assert.equal(dp[0] - ap[0], 4, `${roast}/${process} ปลาย min ต่างกัน 4 โดยตั้งใจ`);
-      }
+      assert.equal(dp[0] - ap[0], 1, `${roast}/${process} ปลาย min`);
+      assert.equal(dp[1] - ap[1], 1, `${roast}/${process} ปลาย max`);
     }
+  }
+});
+
+// เทส 3b - ratio ผ่านชั้นกาแฟ คือตัวแปรที่มีอำนาจสูงสุดบนเครื่อง percolation
+// Delter ต้องไม่หลุดไปทางสูง เพราะยิ่งสูงยิ่ง EY สูง ซึ่งเป็นต้นเหตุขมของโมเดลเดิมที่ 13.3
+test('ratio ผ่านชั้นกาแฟของ Delter อยู่ใกล้ AeroPress ไม่หลุดไปทางสกัดเกิน', () => {
+  for (const combo of ALL_COMBOS('delter')) {
+    const { ratioConcentrate } = computeRecipe(combo);
+    assert.ok(
+      ratioConcentrate <= 11.5,
+      `${label(combo)} ratio ผ่านชั้นกาแฟ ${ratioConcentrate.toFixed(2)} สูงเกิน`,
+    );
   }
 });
 
@@ -337,7 +375,7 @@ test('เตือนหยาบกว่า base ขึ้นก็ต่อ�
 
 // เทส 11 - ratioFinal อยู่ในกรอบที่คำนวณได้จริง
 test('ratioFinal ทุก combo อยู่ในกรอบ', () => {
-  const bands = { aeropress: [13.8, 17.0], delter: [15.3, 17.4] };
+  const bands = { aeropress: [13.8, 17.0], delter: [14.1, 17.0] };
   for (const device of DEVICES) {
     const [lo, hi] = bands[device];
     for (const combo of ALL_COMBOS(device)) {
@@ -531,5 +569,5 @@ test('เวลารวมถึงจบการกด (ไม่รวม by
   const ap = stepsFor('aeropress');
   assert.equal(ap.steps[ap.steps.length - 1].startTime, 150); // 15 + 105 + 30 = 2:30
   const dp = stepsFor('delter');
-  assert.equal(dp.steps[dp.steps.length - 1].startTime, 145); // 20 + 10 + 50 + 25 + 15 + 25 = 2:25
+  assert.equal(dp.steps[dp.steps.length - 1].startTime, 120); // 20 + 10 + 25 + 25 + 15 + 25 = 2:00
 });
