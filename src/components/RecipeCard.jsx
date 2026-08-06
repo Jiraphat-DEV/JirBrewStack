@@ -114,7 +114,11 @@ export default function RecipeCard({ recipe, picks, onPick, onStart }) {
           {ratioFinal}{' '}
           <span className="recipe__info-sub">(ของน้ำที่เทเข้า ไม่ใช่ปริมาณน้ำในถ้วย)</span>
         </InfoRow>
-        <InfoRow label="ก่อน bypass">1:{recipe.ratioConcentrate.toFixed(1)} ของน้ำที่เทเข้า</InfoRow>
+        {/* บน Delter เลขนี้คือกรัมน้ำที่ผ่านชั้นกาแฟต่อกรัมกาแฟ ซึ่งเป็นตัวแปรที่คุมการสกัดมากที่สุด
+            จึงตั้งชื่อให้ตรงความหมาย ไม่ใช่แค่ "ก่อน bypass" แบบฝั่ง AeroPress ที่เป็นการแช่ */}
+        <InfoRow label={recipe.device === 'delter' ? 'น้ำผ่านชั้นกาแฟ' : 'ก่อน bypass'}>
+          1:{recipe.ratioConcentrate.toFixed(1)} ของน้ำที่เทเข้า
+        </InfoRow>
         <InfoRow label="ฟิลเตอร์">{recipe.filter}</InfoRow>
         {recipe.bloom && <InfoRow label="bloom">{recipe.bloom}</InfoRow>}
         {recipe.strokes && <InfoRow label="จังหวะกด">แบ่งกด {recipe.strokes} จังหวะ</InfoRow>}

@@ -17,10 +17,10 @@ export const OVERRIDE_FIELDS = [
 ];
 
 // สะสมแยกจากทุกขั้น แล้วบวกเข้า field ปลายทางครั้งเดียวตอนท้าย
+// preinfusionAdd กับ pressSpeedAdd ถูกลบตอนรื้อโมเดล Delter 2026-08-06 เพราะเป็นปุ่มที่ไม่มีอำนาจ
+// เหลือ steepAdd ซึ่ง AeroPress ใช้จริงจากทั้ง roast และ altitude
 export const ADD_FIELDS = {
   steepAdd: 'steep',
-  preinfusionAdd: 'preinfusionWait',
-  pressSpeedAdd: 'pressSpeed',
 };
 
 // field ที่เก็บเป็นช่วง [min, max] เสมอ
