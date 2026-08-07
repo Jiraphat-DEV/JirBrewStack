@@ -335,7 +335,7 @@ export default function TimerStep({ step, index, state, time, diff, onSelect }) 
       type="button"
       className={`timer-step${state === 'pending' ? '' : ` timer-step--${state}`}`}
       aria-current={state === 'active' ? 'step' : undefined}
-      onClick={canSelect ? onSelect : undefined}
+      onClick={onSelect}
       disabled={!canSelect}
     >
       <span className="timer-step__number">{index + 1}</span>
