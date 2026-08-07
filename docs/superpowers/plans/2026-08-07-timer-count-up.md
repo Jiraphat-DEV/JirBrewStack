@@ -572,8 +572,7 @@ git commit -m "Drive the timer screen from the count-up model"
   margin-top: var(--s-3);
 }
 
-.timer__display--complete .timer__target,
-.timer__display--complete .timer__total {
+.timer__display--complete .timer__target {
   color: rgba(255, 255, 255, 0.85);
 }
 ```
