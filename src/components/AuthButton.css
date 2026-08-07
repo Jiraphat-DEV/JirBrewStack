@@ -1,0 +1,88 @@
+/* min-width กันไม่ให้ header กระตุกตอน auth resolve แล้วช่องว่างกลายเป็นปุ่ม */
+.auth {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  min-width: var(--tap);
+}
+
+.auth__login {
+  padding: 0 var(--s-3);
+  min-height: var(--tap);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* ลอยใต้ปุ่ม ไม่ดันเลย์เอาต์ของ header ที่ sticky อยู่ */
+.auth__error {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  width: max-content;
+  max-width: 60vw;
+  margin-top: var(--s-1);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.auth__summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap);
+  cursor: pointer;
+  list-style: none;
+}
+
+/* ซ่อนสามเหลี่ยม default ของ summary */
+.auth__summary::-webkit-details-marker {
+  display: none;
+}
+
+.auth__avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.auth__menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  width: max-content;
+  min-width: 160px;
+  margin-top: var(--s-1);
+  padding: var(--s-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+
+.auth__name {
+  margin-bottom: var(--s-2);
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.auth__signout {
+  min-height: var(--tap);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+}

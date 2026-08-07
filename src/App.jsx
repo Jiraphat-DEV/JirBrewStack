@@ -6,12 +6,15 @@ import RecipeCard from './components/RecipeCard.jsx';
 import GrindConverter from './components/GrindConverter.jsx';
 import FixTable from './components/FixTable.jsx';
 import Timer from './components/Timer.jsx';
+import AuthButton from './components/AuthButton.jsx';
+import useAuth from './hooks/useAuth.js';
 import './App.css';
 
 export default function App() {
   const [input, setInput] = useState(rules.defaults);
   const [view, setView] = useState('worksheet');
   const [picks, setPicks] = useState(() => defaultPicks(computeRecipe(rules.defaults)));
+  const authState = useAuth();
 
   // computeRecipe เป็น pure และเบา คำนวณใหม่ทุก render ได้ ไม่ต้อง memo
   const recipe = computeRecipe(input);
@@ -55,6 +58,7 @@ export default function App() {
               แก้รส
             </button>
           </nav>
+          <AuthButton {...authState} />
         </header>
       )}
 
