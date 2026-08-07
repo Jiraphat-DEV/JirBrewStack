@@ -1,9 +1,12 @@
-/* min-width กันไม่ให้ header กระตุกตอน auth resolve แล้วช่องว่างกลายเป็นปุ่ม */
+/* min-width จองที่เท่าความกว้างจริงของปุ่ม "เข้าสู่ระบบ" (วัดได้ 79.72px ไม่มี token ตรง)
+   ไม่ใช่ --tap (44px) เพราะปุ่ม login กว้างกว่า avatar ที่ login แล้วมาก
+   วัดด้วย Playwright ที่ 375/390/480px แล้วว่า --tap ทำให้ nav ขยับซ้าย 8-18px ตอน auth resolve
+   ค่านี้จองพื้นที่เท่าปุ่มจริงตั้งแต่ต้น ทำให้ layout ที่ยังไม่ resolve กับ resolve แล้วเหมือนกัน ไม่มีการขยับ */
 .auth {
   position: relative;
   display: flex;
   justify-content: flex-end;
-  min-width: var(--tap);
+  min-width: 80px;
 }
 
 .auth__login {
@@ -37,20 +40,13 @@
   display: flex;
   align-items: center;
   min-height: var(--tap);
-  cursor: pointer;
-  list-style: none;
-}
-
-/* ซ่อนสามเหลี่ยม default ของ summary */
-.auth__summary::-webkit-details-marker {
-  display: none;
 }
 
 .auth__avatar {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: var(--s-6);
+  height: var(--s-6);
   border-radius: 50%;
   object-fit: cover;
   background: var(--color-primary-soft);
