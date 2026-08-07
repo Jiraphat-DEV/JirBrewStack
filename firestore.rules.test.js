@@ -43,6 +43,14 @@ test('ผู้ใช้ A เขียน beans ของ B ไม่ได้'
   await assertFails(setDoc(doc(alice, 'users/bob/beans/b1'), { name: 'Ethiopia' }));
 });
 
+test('ไม่ login อ่าน beans ของใครก็ไม่ได้', async () => {
+  await assertFails(getDoc(doc(anon, 'users/bob/beans/b1')));
+});
+
+test('ไม่ login เขียน beans ของใครก็ไม่ได้', async () => {
+  await assertFails(setDoc(doc(anon, 'users/bob/beans/b1'), { name: 'Ethiopia' }));
+});
+
 test('ผู้ใช้ A อ่านและเขียน beans ของตัวเองได้', async () => {
   await assertSucceeds(setDoc(doc(alice, 'users/alice/beans/b1'), { name: 'Ethiopia' }));
   await assertSucceeds(getDoc(doc(alice, 'users/alice/beans/b1')));
