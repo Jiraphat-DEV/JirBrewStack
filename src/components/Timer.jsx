@@ -77,11 +77,14 @@ export default function Timer({ recipe, picks, onBack }) {
         ) : (
           <>
             {/* เวลาในขั้นกับส่วนต่างเป็นคู่ที่ต้องอ่านพร้อมกัน เป้าเป็นตัวอ้างอิงรองลงมา */}
+            {/* ป้ายนี้ต้องอยู่ตลอดตอนนาฬิกาเดิน (แม้ diffLabel เป็น null ตอนตรงเป้าพอดี)
+                ไม่งั้น .timer__clock ที่ justify-content: center จะบีบตัวเลขเวลากลับไปกลางจอ
+                แล้วเด้งออกอีกทีตอนวินาทีถัดไปที่ diff กลับมาไม่เป็น 0 */}
             <div className="timer__clock">
               <span className="timer__time">{formatTime(timer.stepElapsed)}</span>
-              {timer.isRunning && diffLabel && (
+              {timer.isRunning && (
                 <span className={`timer__diff timer__diff--${timer.stepDiff > 0 ? 'over' : 'under'}`}>
-                  {diffLabel}
+                  {diffLabel ?? 'ตรงเป้า'}
                 </span>
               )}
             </div>
