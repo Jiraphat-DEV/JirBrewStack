@@ -87,6 +87,53 @@
   color: white;
 }
 
+/* เวลาในขั้นกับส่วนต่างต้องอ่านพร้อมกันในสายตาเดียว จึงวางคู่กันบนบรรทัดเดียว
+   baseline align เพื่อให้ป้ายส่วนต่างนั่งเสมอฐานตัวเลขไม่ใช่ลอยกลาง */
+.timer__clock {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+
+/* req ข้อ 8 ตัวบอกว่าเกินเป้าต้องอ่านออกจากระยะแขนตอนมือเปียก จึงใหญ่ระดับเดียวกับตัวเลขเวลา */
+.timer__diff {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer__diff--over {
+  color: var(--color-warning-text);
+}
+
+/* ค่าติดลบระหว่างที่ยังทำขั้นอยู่แค่แปลว่ายังไม่ถึงเป้า ไม่ได้แปลว่าดี จึงเป็นสีกลางไม่ใช่เขียว */
+.timer__diff--under {
+  color: var(--color-text-muted);
+}
+
+.timer__target {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-top: var(--s-2);
+}
+
+.timer__total {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  margin-top: var(--s-3);
+}
+
+.timer__display--complete .timer__target,
+.timer__display--complete .timer__total {
+  color: rgba(255, 255, 255, 0.85);
+}
+
 .timer__progress-bar {
   height: 6px;
   background: var(--color-border);
@@ -172,13 +219,4 @@
   opacity: 0.7;
   cursor: default;
   transform: none;
-}
-
-@keyframes flash {
-  0%, 100% { background-color: var(--color-bg); }
-  50% { background-color: var(--color-warning-flash); }
-}
-
-body.step-change {
-  animation: flash 0.5s ease;
 }
