@@ -1,0 +1,18 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ต้องอ่านได้ตอนไม่ login ไม่งั้นเครื่องคิดเลขพังสำหรับคนที่ไม่มีบัญชี
+    // เขียนได้ทางเดียวคือผ่าน Cloud Function ของ item 12
+    match /rulesets/global {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ไม่มีการอ่าน field role ที่ไหนเลย ถ้าเก็บ role ไว้ใน users/{uid}
+    // ผู้ใช้เขียนทับตัวเองเป็น admin ได้ทันที admin เช็คที่ uid ตรงๆ ใน Cloud Function ที่เดียว
+    match /users/{uid}/{doc=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
