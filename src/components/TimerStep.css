@@ -8,7 +8,7 @@
   border: 2px solid var(--color-border);
   transition: all var(--transition-normal);
   opacity: 0.5;
-  /* เป็นปุ่ม กดเพื่อข้ามไปขั้นตอนนั้นได้ เพราะเวลาจริงไม่เคยตรงกับที่ตั้งไว้ */
+  /* เป็นปุ่ม แต่กดได้เฉพาะขั้นที่ผ่านมาแล้วเพื่อย้อนกลับไปทำใหม่ ไม่ใช่กระโดดไปข้างหน้า */
   width: 100%;
   text-align: left;
   color: inherit;
@@ -79,9 +79,37 @@
   font-weight: 600;
   color: var(--color-text-muted);
   flex-shrink: 0;
+  text-align: right;
 }
 
 .timer-step--active .timer-step__time {
   font-size: var(--fs-md);
   color: var(--color-accent);
+}
+
+/* ขั้นที่กดย้อนกลับไม่ได้ยังต้องดูปกติ แค่ไม่ตอบสนองการกด opacity คุมโดย state class ด้านบนแล้ว */
+.timer-step:disabled {
+  cursor: default;
+}
+
+.timer-step:disabled:active {
+  transform: none;
+}
+
+/* ส่วนต่างของขั้นที่จบแล้ว วางใต้เวลาจริงในคอลัมน์ขวา */
+.timer-step__diff {
+  display: block;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-align: right;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-step__diff--over {
+  color: var(--color-warning-text);
+}
+
+.timer-step__diff--under {
+  color: var(--color-text-muted);
 }
