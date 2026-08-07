@@ -42,6 +42,9 @@ export default function useAuth() {
       onAuthStateChanged(auth, (next) => {
         setUser(next);
         setReady(true);
+        // เคลียร์ error เก่าทุกครั้งที่ auth state เปลี่ยน ไม่งั้น error ที่ค้างจากตอน
+        // ยังไม่ login จะโผล่ซ้ำใต้ปุ่ม login หลัง sign out รอบถัดไป
+        setError(null);
       }),
     [],
   );
@@ -54,11 +57,15 @@ export default function useAuth() {
       // และ subcollection ใน Firestore ไม่ต้องการ parent doc ที่มีอยู่จริง คลังเมล็ดจึงยังทำงานได้ถึงมันจะหาย
       ensureUserDoc(cred.user).catch((e) => console.error('ensureUserDoc', e));
     } catch (e) {
-      if (!SILENT.has(e.code)) setError('เข้าสู่ระบบไม่สำเร็จ ลองใหม่อีกครั้ง');
+      if (!SILENT.has(e?.code)) setError('เข้าสู่ระบบไม่สำเร็จ ลองใหม่อีกครั้ง');
     }
   };
 
-  const signOut = () => firebaseSignOut(auth);
+  const signOut = () => {
+    setError(null);
+    // ไม่ปล่อยให้ promise นี้ reject เงียบๆ จนกลายเป็น unhandled rejection
+    return firebaseSignOut(auth).catch((e) => console.error('signOut', e));
+  };
 
   return { user, ready, error, signIn, signOut };
 }

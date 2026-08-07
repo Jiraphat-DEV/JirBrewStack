@@ -20,7 +20,7 @@ export default function AuthButton({ user, ready, error, signIn, signOut }) {
     );
   }
 
-  const name = user.displayName || 'บัญชีของฉัน';
+  const name = user.displayName?.trim() || 'บัญชีของฉัน';
 
   return (
     <details className="auth">
@@ -34,8 +34,10 @@ export default function AuthButton({ user, ready, error, signIn, signOut }) {
             referrerPolicy="no-referrer"
           />
         ) : (
-          <span className="auth__avatar" aria-label={name}>
-            {name.trim().charAt(0)}
+          // role="img" เพราะ aria-label บน span เปล่าๆ ไม่ใช่ ARIA naming surface
+          // ถ้าไม่มี role นี้ accessible name จะตกไปเหลือแค่ตัวอักษรเดียวที่โชว์
+          <span className="auth__avatar" role="img" aria-label={name}>
+            {name.charAt(0)}
           </span>
         )}
       </summary>
