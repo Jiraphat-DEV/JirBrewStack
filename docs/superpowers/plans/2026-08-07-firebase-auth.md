@@ -125,13 +125,13 @@ bun add -d @firebase/rules-unit-testing@^5
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test src/",
+    "test": "node --test 'src/**/*.test.js'",
     "test:rules": "firebase emulators:exec --only firestore \"node --test firestore.rules.test.js\"",
     "emulators": "firebase emulators:start"
   },
 ```
 
-`test` ต้องเติม `src/` เพราะ `node --test` เปล่าๆ จะกวาดทั้ง repo แล้วไปเจอ `firestore.rules.test.js` ที่รันไม่ได้ถ้าไม่มี emulator เปิดอยู่ เทสเดิมสองไฟล์ (`src/data/brew.test.js`, `src/hooks/useTimer.test.js`) อยู่ใน `src/` ทั้งคู่ ไม่กระทบ
+`test` ต้องจำกัดให้เจาะจง `src/**/*.test.js` เพราะ `node --test` เปล่าๆ จะกวาดทั้ง repo แล้วไปเจอ `firestore.rules.test.js` ที่รันไม่ได้ถ้าไม่มี emulator เปิดอยู่ รูปแบบ `node --test src/` (โฟลเดอร์เปล่าๆ) ก็ใช้ไม่ได้เช่นกัน เพราะพัง `MODULE_NOT_FOUND` บน node v22.19.0 ต้องเป็น glob pattern ชี้ไฟล์ตรงๆ เทสเดิมสองไฟล์ (`src/data/brew.test.js`, `src/hooks/useTimer.test.js`) อยู่ใน `src/` ทั้งคู่ ไม่กระทบ
 
 `test:rules` ให้ `emulators:exec` เปิด emulator เอง รันเทส แล้วปิดเอง ไม่ต้องเปิด terminal สองอัน
 

@@ -134,8 +134,10 @@ let env;
 
 before(async () => {
   // host กับ port ไม่ต้องระบุ อ่านจาก FIRESTORE_EMULATOR_HOST ที่ emulators:exec ตั้งให้
+  // projectId ต้องตรงกับที่ emulator รันอยู่ (jirbrewstack ใน .firebaserc) เพราะ firebase.json
+  // เปิด singleProjectMode ไว้ ใช้ชื่ออื่นเช่น jirbrewstack-rules-test จะต่อ emulator ไม่ติด
   env = await initializeTestEnvironment({
-    projectId: 'jirbrewstack-rules-test',
+    projectId: 'jirbrewstack',
     firestore: { rules: readFileSync('firestore.rules', 'utf8') },
   });
 });
@@ -143,7 +145,7 @@ before(async () => {
 after(() => env.cleanup());
 ```
 
-6 เคส
+8 เคส
 
 | # | เคส | คาดหวัง |
 |---|---|---|
@@ -151,10 +153,14 @@ after(() => env.cleanup());
 | 2 | login แล้วเขียน `rulesets/global` | ไม่ผ่าน |
 | 3 | ผู้ใช้ A อ่าน `users/B/beans/x` | ไม่ผ่าน |
 | 4 | ผู้ใช้ A เขียน `users/B/beans/x` | ไม่ผ่าน |
-| 5 | ผู้ใช้ A อ่านและเขียน `users/A/beans/x` | ผ่าน |
-| 6 | ผู้ใช้ A เขียน doc `users/A` ตัวมันเอง | ผ่าน |
+| 5 | ไม่ login อ่าน `users/B/beans/x` | ไม่ผ่าน |
+| 6 | ไม่ login เขียน `users/B/beans/x` | ไม่ผ่าน |
+| 7 | ผู้ใช้ A อ่านและเขียน `users/A/beans/x` | ผ่าน |
+| 8 | ผู้ใช้ A เขียน doc `users/A` ตัวมันเอง | ผ่าน |
 
-เคส 1 ถึง 5 มาจาก req ข้อ 4 เคส 6 เพิ่มเองเพื่อพิสูจน์เรื่อง zero segment ในข้อ 3.2 ซึ่ง item 03 พึ่งอยู่
+เคส 1 ถึง 4 กับ 7 มาจาก req ข้อ 4 เคส 5 และ 6 เพิ่มทีหลังหลัง code review รอบสุดท้ายชี้ว่าเคส 3-4 มีแต่ context ที่ login แล้ว
+ไม่มีเคสไหนพิสูจน์ว่าคนไม่ login แตะข้อมูลคนอื่นไม่ได้เลย ซึ่งเป็นคุณสมบัติที่สำคัญที่สุดของ ruleset นี้สำหรับแอปสาธารณะ
+เคส 8 เพิ่มเองเพื่อพิสูจน์เรื่อง zero segment ในข้อ 3.2 ซึ่ง item 03 พึ่งอยู่
 
 เคส 1 ไม่ต้อง seed ข้อมูล การอ่าน doc ที่ไม่มีอยู่ยังผ่าน rules และคืน snapshot ที่ `exists()` เป็น false ซึ่งนับว่าอ่านได้ตามที่ต้องการวัด
 
@@ -165,13 +171,13 @@ after(() => env.cleanup());
   "dev": "vite",
   "build": "vite build",
   "preview": "vite preview",
-  "test": "node --test src/",
+  "test": "node --test 'src/**/*.test.js'",
   "test:rules": "firebase emulators:exec --only firestore \"node --test firestore.rules.test.js\"",
   "emulators": "firebase emulators:start"
 }
 ```
 
-`test` ต้องเติม `src/` เข้าไป เพราะ `node --test` เปล่าๆ จะกวาดทั้ง repo แล้วไปเจอ `firestore.rules.test.js` ที่รันไม่ได้ถ้าไม่มี emulator เปิดอยู่ เทสเดิม (`src/data/brew.test.js`, `src/hooks/useTimer.test.js`) อยู่ใน `src/` ทั้งคู่ ไม่กระทบ
+`test` ต้องจำกัดให้เจาะจง `src/**/*.test.js` เพราะ `node --test` เปล่าๆ จะกวาดทั้ง repo แล้วไปเจอ `firestore.rules.test.js` ที่รันไม่ได้ถ้าไม่มี emulator เปิดอยู่ รูปแบบ `node --test src/` (โฟลเดอร์เปล่าๆ) ก็ใช้ไม่ได้เช่นกัน เพราะพัง `MODULE_NOT_FOUND` บน node v22.19.0 ต้องเป็น glob pattern ชี้ไฟล์ตรงๆ เทสเดิม (`src/data/brew.test.js`, `src/hooks/useTimer.test.js`) อยู่ใน `src/` ทั้งคู่ ไม่กระทบ
 
 `test:rules` ให้ `emulators:exec` เปิด emulator เอง รันเทส แล้วปิดเอง ไม่ต้องเปิด terminal สองอัน `emulators` มีไว้ตอนอยากเปิดค้างเพื่อไล่ดู UI
 
@@ -217,9 +223,8 @@ service account `firebase-adminsdk-fbsvc@jirbrewstack.iam.gserviceaccount.com` �
 ```js
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
 
-// ค่าชุดนี้เปิดเผยได้ ไม่ใช่ความลับ ความปลอดภัยอยู่ที่ firestore.rules กับ authorized domain
+// ค่าชุดนี้เปิดเผยได้ ไม่ใช่ความลับ ความปลอดภัยอยู่ที่ firestore.rules ที่เดียว
 // ไม่ใช่ที่ apiKey ทำเป็น VITE_* จึงได้แค่ indirection กับโอกาสลืมตั้ง var ตอน deploy
 const app = initializeApp({
   apiKey: '...',
@@ -231,7 +236,6 @@ const app = initializeApp({
 });
 
 export const auth = getAuth(app);
-export const db = getFirestore(app);
 ```
 
 **project ยังไม่มี web app เลย** ตรวจแล้ว 2026-08-07 ด้วย `firebase apps:list --project jirbrewstack` ได้ `No apps found` เพราะ v2 เป็น static site ที่ deploy ผ่าน hosting อย่างเดียว ไม่เคยต้องมี app ที่ลงทะเบียน ขั้นตอนตอน implement จึงเป็น
@@ -245,6 +249,8 @@ firebase apps:sdkconfig web --project jirbrewstack
 
 ไม่มี `connectAuthEmulator` / `connectFirestoreEmulator` local dev ยิงเข้า Firebase จริง (`localhost` เป็น authorized domain อยู่แล้ว) แลกกับ Google popup ที่ทำงานเหมือนของจริงตอน dev
 
+`src/firebase.js` export แค่ `auth` เท่านั้น ไม่มี `getFirestore` และไม่มี export `db` เพราะคนไม่ login คือ default path ของแอปนี้ และไม่ควรต้องโหลด Firestore SDK เข้า bundle เลย `firebase/firestore` ถูก import แบบ dynamic อยู่ใน `ensureUserDoc` ของ `src/hooks/useAuth.js` แทน (ดู 4.2) ทำให้ Firestore กลายเป็น chunk แยกที่โหลดเฉพาะตอน sign-in สำเร็จ ไม่ใช่ตอนโหลดแอปครั้งแรก
+
 ### 4.2 `src/hooks/useAuth.js`
 
 คืน `{ user, ready, error, signIn, signOut }`
@@ -256,6 +262,10 @@ const provider = new GoogleAuthProvider();
 const SILENT = new Set(['auth/popup-closed-by-user', 'auth/cancelled-popup-request']);
 
 async function ensureUserDoc(user) {
+  const { getFirestore, doc, getDoc, serverTimestamp, setDoc } = await import(
+    'firebase/firestore'
+  );
+  const db = getFirestore();
   const ref = doc(db, 'users', user.uid);
   if ((await getDoc(ref)).exists()) return;
   await setDoc(ref, {
@@ -329,8 +339,8 @@ state ทั้งหมดของแอป (`input`, `view`, `picks`) ไม�
 
 ### item 02
 
-- `firebase emulators:start` ขึ้นครบ auth, firestore, hosting โดยไม่มี error
-- `bun run test:rules` ผ่านครบ 6 เคส
+- `firebase emulators:start` ขึ้นครบ auth, firestore, hosting โดยไม่มี error (port hosting ย้ายจาก 5000 เป็น 5050 ตั้งแต่ code review รอบสุดท้าย เพราะ 5000 ชนกับ macOS AirPlay Receiver บนเครื่องเจ้าของ ไม่มีอะไรในโปรเจกต์นี้ผูกกับ 5000 อยู่แล้ว)
+- `bun run test:rules` ผ่านครบ 8 เคส
 - `gcloud firestore databases list --project jirbrewstack` เห็น instance ที่ `asia-southeast1`
 - `bun run test` (เทสเดิม) ยังผ่าน
 - `bun run build` ได้ขนาดเท่าเดิมเป๊ะ baseline ที่วัดไว้ 2026-08-07 คือ JS 168.03 kB (gzip 55.53 kB) และ CSS 17.48 kB (gzip 3.51 kB)
@@ -356,3 +366,5 @@ state ทั้งหมดของแอป (`input`, `view`, `picks`) ไม�
 | `<details>` ไม่มี click-outside-to-close | วันที่เมนูมีมากกว่าปุ่มเดียว |
 | ไม่มี composite index | item 07 brew-history ที่เริ่ม query จริง |
 | doc `users/{uid}` ไม่ถูกสร้างซ่อมถ้าครั้งแรกเขียนพลาด | วันที่มีอะไรอ่าน doc นี้จริงๆ ตอนนี้ยังไม่มี |
+| Firestore ถูกโหลดแบบ lazy (dynamic import ใน `ensureUserDoc`) ฝั่งที่ไม่ login ไม่โหลด SDK เลย | item 10 (ruleset-load-global) ที่ต้องอ่าน `rulesets/global` บน no-login path ด้วย คนทำต้องตัดสินใจว่าจะคงขอบเขต lazy ไว้ (import Firestore แบบ dynamic ตอนแอปโหลดแทน) หรือย้าย Firestore กลับไปโหลดแบบ eager |
+| ไม่มี App Check ป้องกัน read/write ตรงๆ ผ่าน public apiKey นอกเหนือจาก firestore.rules | วันที่ `rulesets/global` ต้องการการป้องกันมากกว่า rules อย่างเดียว ซึ่งน่าจะเป็นตอน item 10 เช่นกัน |
