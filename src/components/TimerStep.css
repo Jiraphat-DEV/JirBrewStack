@@ -8,7 +8,7 @@
   border: 2px solid var(--color-border);
   transition: all var(--transition-normal);
   opacity: 0.5;
-  /* เป็นปุ่ม กดเพื่อข้ามไปขั้นตอนนั้นได้ เพราะเวลาจริงไม่เคยตรงกับที่ตั้งไว้ */
+  /* เป็นปุ่ม แต่กดได้เฉพาะขั้นที่ผ่านมาแล้วเพื่อย้อนกลับไปทำใหม่ ไม่ใช่กระโดดไปข้างหน้า */
   width: 100%;
   text-align: left;
   color: inherit;
@@ -79,6 +79,7 @@
   font-weight: 600;
   color: var(--color-text-muted);
   flex-shrink: 0;
+  text-align: right;
 }
 
 .timer-step--active .timer-step__time {
