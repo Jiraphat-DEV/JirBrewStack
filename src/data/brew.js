@@ -287,7 +287,7 @@ function delterSteps(r, p, timing) {
   return steps;
 }
 
-// useTimer หา step ปัจจุบันจาก startTime แบบสะสม (absolute) และไม่อ่าน duration เลย
+// useTimer ไม่อ่าน startTime แล้ว อ่านแค่ duration ของแต่ละ step เป็นเป้าหมายต่อขั้น
 // timing (ระยะเวลา step คงที่) มาจาก rules[device].timing ไม่ใช่จาก recipe เพราะเป็นเรื่องจังหวะ
 // การชง ไม่ใช่คุณสมบัติของกาแฟ recipe เลยไม่ควรพก field นี้ไปด้วย
 export function buildTimerSteps(recipe, picks) {
