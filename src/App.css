@@ -84,3 +84,21 @@
     gap: var(--s-5);
   }
 }
+
+/* จอแคบสุดที่รองรับ (320px อย่าง iPhone SE) title + nav + auth สามชิ้นไม่พอที่แบบระยะห่างปกติ
+   วัดด้วย Playwright แล้วว่า header ล้นออกนอกจอ ~44px และปุ่ม "แก้รส" ตัดคำ 2 บรรทัด
+   ลดเฉพาะ gap, padding ของ header/nav-btn และ font-size ของ title ในช่วงนี้ 375px ขึ้นไปไม่โดน */
+@media (max-width: 340px) {
+  .app__header {
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-3);
+  }
+
+  .app__title {
+    font-size: var(--fs-md);
+  }
+
+  .app__nav-btn {
+    padding: 0 var(--s-2);
+  }
+}
