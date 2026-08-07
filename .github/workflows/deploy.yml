@@ -1,4 +1,4 @@
-name: Build and Deploy to Firebase Hosting
+name: Build and Deploy to Firebase (Hosting + Firestore Rules)
 
 on:
   workflow_dispatch:
@@ -41,8 +41,20 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+          TARGET_ENVIRONMENT: ${{ inputs.environment }}
         run: |
           printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+          chmod 600 "$RUNNER_TEMP/sa.json"
+          # ลบไฟล์ credential ทิ้งไม่ว่า deploy จะจบแบบไหน กัน credential ค้างบน self-hosted runner
+          trap 'rm -f "$RUNNER_TEMP/sa.json"' EXIT
+
+          # prod ถูกเปิดค้างไว้ตั้งใจโดยที่ secret ยังว่าง (ดู Global Constraint ในแผนงาน)
+          # ถ้าเลือก prod ตอนนี้ต้องล้มด้วยข้อความที่อ่านออก ไม่ใช่ไปพังลึกใน ADC parsing ของ firebase-tools
+          if [ ! -s "$RUNNER_TEMP/sa.json" ]; then
+            echo "::error::secrets.FIREBASE_SERVICE_ACCOUNT is empty for environment '$TARGET_ENVIRONMENT'. Set this secret in the '$TARGET_ENVIRONMENT' GitHub environment before dispatching this workflow against it." >&2
+            exit 1
+          fi
+
           export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
           bunx firebase-tools@15 deploy \
             --only firestore,hosting \

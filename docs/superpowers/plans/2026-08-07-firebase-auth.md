@@ -368,7 +368,7 @@ git commit -m "Deploy Firestore rules alongside hosting in CI"
 
 - [ ] **Step 6: ให้เจ้าของสั่ง deploy uat แล้วตรวจผล**
 
-push branch ขึ้นไปก่อน แล้วบอกเจ้าของให้สั่ง workflow `Build and Deploy to Firebase Hosting` แบบ `workflow_dispatch` เลือก environment `uat` (ห้ามเลือก `prod`)
+push branch ขึ้นไปก่อน แล้วบอกเจ้าของให้สั่ง workflow `Build and Deploy to Firebase (Hosting + Firestore Rules)` แบบ `workflow_dispatch` เลือก environment `uat` (ห้ามเลือก `prod`)
 
 เช็คสามข้อหลัง workflow เขียว
 - workflow ผ่านทุก step
