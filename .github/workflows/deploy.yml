@@ -37,9 +37,14 @@ jobs:
           VITE_API_URL: ${{ vars.VITE_API_URL }}
           VITE_ENV: ${{ vars.VITE_ENV }}
 
-      - name: Deploy to Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-          projectId: ${{ vars.FIREBASE_PROJECT_ID }}
-          channelId: live
+      - name: Deploy to Firebase
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
+          bunx firebase-tools@15 deploy \
+            --only firestore,hosting \
+            --project "$FIREBASE_PROJECT_ID" \
+            --non-interactive
