@@ -1,3 +1,5 @@
+import { useEffect, useReducer, useState } from 'react';
+
 export const initialTimerState = { actuals: [], stepStartedAt: null };
 
 // now กับ stepCount ส่งเข้ามาทาง action ไม่ให้ตัว reducer เรียก Date.now() หรืออ่าน steps เอง
@@ -67,4 +69,35 @@ export function formatTime(seconds) {
 export function formatDiff(seconds) {
   if (seconds === 0) return null;
   return `${seconds > 0 ? '+' : ''}${seconds} วิ`;
+}
+
+export function useTimer(steps) {
+  const [state, dispatch] = useReducer(timerReducer, initialTimerState);
+  const [now, setNow] = useState(() => Date.now());
+
+  // interval มีหน้าที่แค่สั่ง re-render ตัวเลขวินาทีคำนวณจาก timestamp เสมอ
+  // ของเดิมบวก 1 ทุกครั้งที่ interval ยิง ซึ่งพอแท็บถูกซ่อนเบราว์เซอร์หรี่ interval
+  // เหลือนาทีละครั้ง เวลาที่บันทึกเลยน้อยกว่าจริงแบบเงียบๆ
+  // 500 ms เพื่อให้เลขบนจอตามหลังของจริงไม่เกินครึ่งวินาที
+  useEffect(() => {
+    if (state.stepStartedAt === null) return undefined;
+    const id = setInterval(() => setNow(Date.now()), 500);
+    return () => clearInterval(id);
+  }, [state.stepStartedAt]);
+
+  // ยิง Date.now() ครั้งเดียวต่อการกด แล้วใช้ค่าเดียวกันทั้งใน action และใน now ที่ใช้ render
+  // ถ้าปล่อยให้ now ค้างเก่ากว่า stepStartedAt เวลาที่แสดงจะติดลบชั่วขณะ
+  const at = (action) => {
+    const t = Date.now();
+    setNow(t);
+    dispatch({ ...action, now: t });
+  };
+
+  return {
+    ...timerView(steps, state, now),
+    actuals: state.actuals,
+    goToStep: (index) => at({ type: 'goToStep', index }),
+    endStep: () => at({ type: 'endStep', stepCount: steps.length }),
+    reset: () => dispatch({ type: 'reset' }),
+  };
 }

@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useTimer } from '../hooks/useTimer.js';
+import { useTimer, formatTime, formatDiff } from '../hooks/useTimer.js';
 import { useWakeLock } from '../hooks/useWakeLock.js';
 import { buildTimerSteps } from '../data/brew.js';
 import rules from '../data/brewing-rules.js';
@@ -7,26 +6,29 @@ import TimerStep from './TimerStep.jsx';
 import './Timer.css';
 
 export default function Timer({ recipe, picks, onBack }) {
-  const { steps, totalTime } = buildTimerSteps(recipe, picks);
-  const timer = useTimer(steps, totalTime);
+  const { steps } = buildTimerSteps(recipe, picks);
+  const timer = useTimer(steps);
   useWakeLock(timer.isRunning);
 
-  // กะพริบพื้นหลังตอนเปลี่ยน step เพื่อให้เห็นจากระยะแขนตอนมือไม่ว่าง
-  useEffect(() => {
-    if (!timer.stepChanged) return undefined;
-    document.body.classList.add('step-change');
-    const id = setTimeout(() => document.body.classList.remove('step-change'), 500);
-    return () => {
-      clearTimeout(id);
-      document.body.classList.remove('step-change');
-    };
-  }, [timer.stepChanged]);
+  const diffLabel = formatDiff(timer.stepDiff);
 
   const stepState = (index) => {
     if (index === timer.currentStepIndex) return 'active';
     if (index < timer.currentStepIndex) return 'complete';
     return 'pending';
   };
+
+  // ขั้นที่ผ่านแล้วโชว์เวลาจริง ขั้นที่กำลังทำโชว์เวลาเดินสด ที่เหลือโชว์เป้าจากสูตร
+  const stepTime = (index) => {
+    if (index < timer.currentStepIndex) return formatTime(timer.actuals[index]);
+    if (index === timer.currentStepIndex && timer.isRunning) return formatTime(timer.stepElapsed);
+    return formatTime(steps[index].duration);
+  };
+
+  const stepDiffOf = (index) =>
+    index < timer.currentStepIndex ? timer.actuals[index] - steps[index].duration : null;
+
+  const mainLabel = timer.isComplete ? 'ชงเสร็จแล้ว' : timer.isRunning ? 'จบขั้นนี้' : 'เริ่ม';
 
   return (
     <div className="timer">
@@ -62,9 +64,32 @@ export default function Timer({ recipe, picks, onBack }) {
         <div className="timer__step-indicator">
           {timer.isComplete
             ? 'ชงเสร็จแล้ว'
-            : `ขั้นที่ ${timer.currentStepIndex + 1}/${steps.length} · ${timer.currentStep.name}`}
+            : `ขั้นที่ ${timer.currentStepIndex + 1}/${steps.length} · ${steps[timer.currentStepIndex].name}`}
         </div>
-        <div className="timer__time">{timer.formatTime(timer.totalTimeRemaining)}</div>
+
+        {timer.isComplete ? (
+          <>
+            <div className="timer__clock">
+              <span className="timer__time">{formatTime(timer.totalElapsed)}</span>
+            </div>
+            <div className="timer__target">เวลารวมทั้งหมด</div>
+          </>
+        ) : (
+          <>
+            {/* เวลาในขั้นกับส่วนต่างเป็นคู่ที่ต้องอ่านพร้อมกัน เป้าเป็นตัวอ้างอิงรองลงมา */}
+            <div className="timer__clock">
+              <span className="timer__time">{formatTime(timer.stepElapsed)}</span>
+              {timer.isRunning && diffLabel && (
+                <span className={`timer__diff timer__diff--${timer.stepDiff > 0 ? 'over' : 'under'}`}>
+                  {diffLabel}
+                </span>
+              )}
+            </div>
+            <div className="timer__target">เป้า {formatTime(timer.stepTarget)}</div>
+            <div className="timer__total">รวม {formatTime(timer.totalElapsed)}</div>
+          </>
+        )}
+
         <div className="timer__progress-bar">
           <div className="timer__progress-fill" style={{ width: `${timer.progress}%` }} />
         </div>
@@ -77,12 +102,9 @@ export default function Timer({ recipe, picks, onBack }) {
             step={step}
             index={index}
             state={stepState(index)}
-            remaining={
-              index === timer.currentStepIndex
-                ? timer.formatTime(timer.stepTimeRemaining)
-                : timer.formatTime(step.duration)
-            }
-            onSeek={() => timer.seek(step.startTime)}
+            time={stepTime(index)}
+            diff={stepDiffOf(index)}
+            onSelect={() => timer.goToStep(index)}
           />
         ))}
       </div>
@@ -100,10 +122,10 @@ export default function Timer({ recipe, picks, onBack }) {
           className={`timer__control-btn timer__control-btn--primary${
             timer.isComplete ? ' timer__control-btn--complete' : ''
           }`}
-          onClick={timer.toggle}
+          onClick={timer.isRunning ? timer.endStep : () => timer.goToStep(0)}
           disabled={timer.isComplete}
         >
-          {timer.isComplete ? 'เสร็จแล้ว' : timer.isRunning ? 'หยุดชั่วคราว' : 'เริ่ม'}
+          {mainLabel}
         </button>
       </div>
     </div>
