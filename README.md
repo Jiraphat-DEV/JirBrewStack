@@ -22,6 +22,17 @@ https://jirbrewstack.web.app
 - React 18
 - Vite
 - CSS (no frameworks)
+- Firebase / Firestore (auth และ security rules)
+
+## Prerequisites
+
+`bun install` ลง dependency ของแอปให้ครบ แต่ `firebase-tools` ไม่ได้อยู่ใน `devDependencies` (ตั้งใจ ดู design spec) ต้องลง CLI เองแยกต่างหาก
+
+```bash
+npm i -g firebase-tools
+```
+
+emulator ต้องมี Java (JDK) ในเครื่องด้วย
 
 ## Development
 
@@ -37,4 +48,10 @@ bun run build
 
 # Run tests
 bun run test
+
+# รัน security rules test บน Firestore emulator (ต้องลง firebase-tools ก่อน)
+bun run test:rules
+
+# เปิด Firebase emulator ค้างไว้ (auth, firestore, hosting) ไว้ไล่ดู UI
+bun run emulators
 ```
