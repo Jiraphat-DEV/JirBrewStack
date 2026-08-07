@@ -5,19 +5,24 @@ import {
   signInWithPopup,
   signOut as firebaseSignOut,
 } from 'firebase/auth';
-import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase.js';
+import { auth } from '../firebase.js';
 
 const provider = new GoogleAuthProvider();
 
 // สองอันนี้เงียบ เพราะเป็นเจตนาของผู้ใช้เอง ไม่ใช่ความผิดพลาดที่ต้องรายงาน
 const SILENT = new Set(['auth/popup-closed-by-user', 'auth/cancelled-popup-request']);
 
+// import 'firebase/firestore' แบบ dynamic เพราะคนไม่ login คือ default path
+// และไม่ควรโหลด Firestore SDK เลย เรียกเฉพาะตอนนี้ ตอน signInWithPopup สำเร็จ
 // getDoc ก่อนแล้วค่อย setDoc เฉพาะตอนยังไม่มี ใช้ setDoc merge อย่างเดียวไม่ได้
 // เพราะ createdAt จะถูกเขียนทับทุกรอบที่ login
 // เรียกเฉพาะตอน signInWithPopup สำเร็จ ไม่เรียกตอน restore session
 // ไม่งั้นเสีย 1 read ทุกครั้งที่รีเฟรชโดยไม่ได้อะไรกลับมา
 async function ensureUserDoc(user) {
+  const { getFirestore, doc, getDoc, serverTimestamp, setDoc } = await import(
+    'firebase/firestore'
+  );
+  const db = getFirestore();
   const ref = doc(db, 'users', user.uid);
   if ((await getDoc(ref)).exists()) return;
   await setDoc(ref, {
