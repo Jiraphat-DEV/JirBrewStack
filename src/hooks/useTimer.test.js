@@ -20,6 +20,18 @@ const T0 = 1_754_500_000_000; // timestamp คงที่ ไม่พึ่ง
 const start = (now = T0) => timerReducer(initialTimerState, { type: 'goToStep', index: 0, now });
 const end = (state, now) => timerReducer(state, { type: 'endStep', now, stepCount: STEPS.length });
 
+test('ก่อนกดเริ่ม ยังไม่วิ่งไม่เสร็จ แต่เป้าของขั้นแรกพร้อมให้อ่านอยู่แล้ว', () => {
+  const view = timerView(STEPS, initialTimerState, T0);
+
+  assert.equal(view.currentStepIndex, 0);
+  assert.equal(view.isRunning, false);
+  assert.equal(view.isComplete, false);
+  assert.equal(view.stepElapsed, 0);
+  assert.equal(view.stepTarget, 30);
+  assert.equal(view.totalElapsed, 0);
+  assert.equal(view.progress, 0);
+});
+
 test('กดเริ่มแล้วปล่อยทิ้ง 5 นาที ยังอยู่ขั้นแรกและไม่มีอะไรประกาศว่าเสร็จ', () => {
   const state = start();
   const view = timerView(STEPS, state, T0 + 300_000);
@@ -75,6 +87,9 @@ test('จบครบทุกขั้นแล้วได้เวลาจ�
   assert.equal(view.isRunning, false);
   assert.equal(view.totalElapsed, 150);
   assert.equal(view.progress, 100);
+  // currentStepIndex เท่ากับ steps.length พอดี ต้องไม่มีการอ่าน steps[currentStepIndex] ต่อ
+  assert.equal(view.stepTarget, 0);
+  assert.equal(view.stepDiff, 0);
 });
 
 test('กดจบขั้นตอนยังไม่เริ่ม ไม่ทำอะไรเลย', () => {
