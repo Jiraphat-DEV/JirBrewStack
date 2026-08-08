@@ -356,7 +356,7 @@ state ทั้งหมดของแอป (`input`, `view`, `picks`) ไม�
 - ปิดเน็ตแล้วกด login ขึ้นข้อความบอก ไม่จอขาว
 - ผู้ใช้ A อ่าน `users/B` ไม่ได้ (ยืนยันซ้ำกับเทส rules เคส 3)
 - ขนาด bundle แรกที่วัดได้ตอนเพิ่ม firebase SDK แบบ eager (วัด 2026-08-07): JS 168.03 kB (gzip 55.53 kB) เป็น 829.73 kB (gzip 221.31 kB) โตขึ้น 661.70 kB (gzip 165.78 kB) และ CSS 17.48 kB (gzip 3.51 kB) เป็น 18.86 kB (gzip 3.71 kB) โตขึ้น 1.38 kB (gzip 0.20 kB) โตกว่าตัวเลข 150KB gzipped ที่ roadmap เดาไว้ ตัวเลขนี้เป็นที่มาของการทำ Firestore ให้ lazy ในรอบ code review สุดท้าย (ดู 4.1)
-- ขนาด bundle จริงหลังทำ Firestore เป็น lazy chunk (วัด 2026-08-07 หลัง code review รอบสุดท้าย, `bun run build`): JS ก้อนแรกที่โหลดทันที 329.31 kB (gzip 89.47 kB) ลดจาก 829.73 kB (gzip 221.31 kB) ของตอน eager เพราะคนไม่ login ไม่โหลด Firestore SDK เลย ส่วน Firestore เองกลายเป็น chunk แยก `index.esm-*.js` 501.84 kB (gzip 132.01 kB) ที่โหลดเฉพาะตอน sign-in สำเร็จ (`ensureUserDoc`) และ CSS 18.93 kB (gzip 3.73 kB)
+- ขนาด bundle จริงหลังทำ Firestore เป็น lazy chunk (วัด 2026-08-07 หลัง code review รอบสุดท้าย, `bun run build`): JS ก้อนแรกที่โหลดทันที 329.31 kB (gzip 89.47 kB) ลดจาก 829.73 kB (gzip 221.31 kB) ของตอน eager เพราะคนไม่ login ไม่โหลด Firestore SDK เลย ส่วน Firestore เองกลายเป็น chunk แยก `index.esm-*.js` 501.84 kB (gzip 132.01 kB) ที่โหลดเฉพาะตอน sign-in สำเร็จ (`ensureUserDoc`) และ CSS 18.98 kB (gzip 3.78 kB) หลังแก้ header รอบสุดท้าย vite ยังเตือนเรื่อง chunk ใหญ่กว่า 500 kB อยู่ เพราะ chunk ของ Firestore เองยังใหญ่กว่านั้น การแยก lazy ย้ายมันออกจาก critical path ได้ แต่ไม่ได้ทำให้คำเตือนหาย
 
 ## 7. หนี้ที่ตั้งใจก่อ
 
