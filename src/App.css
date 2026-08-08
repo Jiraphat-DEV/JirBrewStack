@@ -24,17 +24,19 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-/* ชื่อแอปเป็นของประดับ ไม่ใช่ปุ่มที่ต้องกดครบทุกตัวอักษร จึงเป็นตัวเดียวใน header สามชิ้น
-   ที่ยอมเสียพื้นที่ก่อน (nav กับ auth ห้ามหด เพราะหดแล้วป้าย/ปุ่มมันพัง)
-   min-width: 0 คือตัวที่ทำให้ flex ยอมหดต่ำกว่าความกว้างตัวอักษรจริง ไม่งั้น header
-   จะดันล้นขวาจอตั้งแต่ ~341px เพราะ "JirBrewStack" กว้างกว่าที่ตัด flex-basis ไปเองไม่ได้ */
+/* จอแคบ ชื่อแอปเคยเป็นตัวเดียวที่ยอมเสียพื้นที่ทั้งหมด (หดจนตัด "JirBrewStack" เหลือ
+   "JirBrewS...") ทั้งที่ padding ของปุ่ม nav ก็เป็นพื้นที่ตกแต่งเหมือนกันแต่ไม่ได้ถูกบีบเลย
+   ตอนนี้เลยให้ font-size ของชื่อไล่เชิงเส้นจาก 16px ที่ 320px ขึ้นไปเป็น 22px (--fs-lg เดิม)
+   ที่ 420px แทนค่าคงที่ ผลคือชื่อยังอ่านครบทุกตัวตั้งแต่ 320px (แค่ตัวเล็กลง) ไม่ใช่โดนตัด
+   ครึ่งคำแบบก่อนหน้า ส่วน overflow/ellipsis ยังอยู่เป็นทางออกสุดท้ายเผื่อจอแคบกว่า 320px
+   ที่ font-size ต่ำสุดของ clamp ก็ยังไม่พอ */
 .app__title {
   flex-shrink: 1;
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: var(--fs-lg);
+  font-size: clamp(1rem, calc(6vw - 3.2px), var(--fs-lg));
   font-weight: 700;
   color: var(--color-primary);
   letter-spacing: -0.5px;
@@ -52,8 +54,11 @@
   border-radius: var(--radius-pill);
 }
 
+/* padding ซ้ายขวาของปุ่มเป็นพื้นที่ตกแต่ง ไม่ใช่ tap target (min-height คุมความสูงที่กดได้อยู่แล้ว)
+   จอแคบเลยไล่ค่านี้เชิงเส้นจาก 4px ที่ 320px ขึ้นไปเป็น 16px (--s-4 เดิม) ที่ 420px ก่อน
+   ที่จะไปบีบชื่อแอป แทนที่จะปล่อยให้ชื่อแอปรับภาระทั้งหมดคนเดียวเหมือนรอบที่แล้ว */
 .app__nav-btn {
-  padding: 0 var(--s-4);
+  padding: 0 clamp(var(--s-1), calc(12vw - 34.4px), var(--s-4));
   min-height: var(--tap);
   border-radius: var(--radius-pill);
   font-size: var(--fs-sm);
