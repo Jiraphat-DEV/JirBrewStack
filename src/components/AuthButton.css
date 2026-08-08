@@ -1,10 +1,12 @@
 /* min-width จองที่เท่าความกว้างจริงของปุ่ม "เข้าสู่ระบบ" (วัดได้ 79.72px ไม่มี token ตรง)
    ไม่ใช่ --tap (44px) เพราะปุ่ม login กว้างกว่า avatar ที่ login แล้วมาก
    วัดด้วย Playwright ที่ 375/390/480px แล้วว่า --tap ทำให้ nav ขยับซ้าย 8-18px ตอน auth resolve
-   ค่านี้จองพื้นที่เท่าปุ่มจริงตั้งแต่ต้น ทำให้ layout ที่ยังไม่ resolve กับ resolve แล้วเหมือนกัน ไม่มีการขยับ */
+   ค่านี้จองพื้นที่เท่าปุ่มจริงตั้งแต่ต้น ทำให้ layout ที่ยังไม่ resolve กับ resolve แล้วเหมือนกัน ไม่มีการขยับ
+   flex-shrink: 0 กันไม่ให้ header บีบช่องนี้ตอนจอแคบ ไม่งั้น min-width ด้านบนไม่มีความหมาย */
 .auth {
   position: relative;
   display: flex;
+  flex-shrink: 0;
   justify-content: flex-end;
   min-width: 80px;
 }

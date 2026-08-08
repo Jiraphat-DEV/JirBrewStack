@@ -24,7 +24,16 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* ชื่อแอปเป็นของประดับ ไม่ใช่ปุ่มที่ต้องกดครบทุกตัวอักษร จึงเป็นตัวเดียวใน header สามชิ้น
+   ที่ยอมเสียพื้นที่ก่อน (nav กับ auth ห้ามหด เพราะหดแล้วป้าย/ปุ่มมันพัง)
+   min-width: 0 คือตัวที่ทำให้ flex ยอมหดต่ำกว่าความกว้างตัวอักษรจริง ไม่งั้น header
+   จะดันล้นขวาจอตั้งแต่ ~341px เพราะ "JirBrewStack" กว้างกว่าที่ตัด flex-basis ไปเองไม่ได้ */
 .app__title {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-size: var(--fs-lg);
   font-weight: 700;
   color: var(--color-primary);
@@ -32,9 +41,11 @@
 }
 
 /* segmented control: ปุ่มสองอันอยู่ในรางเดียว อ่านออกว่าเป็นตัวเลือกคู่กัน
-   ของเดิมเป็นปุ่มกรอบแยกสองอันที่ position: absolute แล้วทับหัวข้อจนตัวหนังสือขาด */
+   ของเดิมเป็นปุ่มกรอบแยกสองอันที่ position: absolute แล้วทับหัวข้อจนตัวหนังสือขาด
+   flex-shrink: 0 กันไม่ให้ header บีบรางนี้ตอนจอแคบ ไม่งั้นปุ่ม "แก้รส" ตัดคำเป็น 2 บรรทัด */
 .app__nav {
   display: flex;
+  flex-shrink: 0;
   gap: var(--s-1);
   padding: 3px;
   background: var(--color-primary-soft);
@@ -48,6 +59,7 @@
   font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--color-text-muted);
+  white-space: nowrap;
   transition: color var(--transition-fast), background var(--transition-fast);
 }
 
@@ -82,23 +94,5 @@
   .app__main {
     padding-top: var(--s-5);
     gap: var(--s-5);
-  }
-}
-
-/* จอแคบสุดที่รองรับ (320px อย่าง iPhone SE) title + nav + auth สามชิ้นไม่พอที่แบบระยะห่างปกติ
-   วัดด้วย Playwright แล้วว่า header ล้นออกนอกจอ ~44px และปุ่ม "แก้รส" ตัดคำ 2 บรรทัด
-   ลดเฉพาะ gap, padding ของ header/nav-btn และ font-size ของ title ในช่วงนี้ 375px ขึ้นไปไม่โดน */
-@media (max-width: 340px) {
-  .app__header {
-    gap: var(--s-2);
-    padding: var(--s-2) var(--s-3);
-  }
-
-  .app__title {
-    font-size: var(--fs-md);
-  }
-
-  .app__nav-btn {
-    padding: 0 var(--s-2);
   }
 }
