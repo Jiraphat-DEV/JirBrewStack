@@ -107,7 +107,7 @@ match /users/{uid} {
   "emulators": {
     "auth": { "port": 9099 },
     "firestore": { "port": 8080 },
-    "hosting": { "port": 5000 },
+    "hosting": { "port": 5050 },
     "ui": { "enabled": true },
     "singleProjectMode": true
   }
