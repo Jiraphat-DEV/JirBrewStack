@@ -55,9 +55,14 @@ export default function useAuth() {
       const cred = await signInWithPopup(auth, provider);
       // ไม่ await เพราะ login สำเร็จไปแล้ว doc นี้เป็นของแถมที่ยังไม่มีใครอ่าน
       // และ subcollection ใน Firestore ไม่ต้องการ parent doc ที่มีอยู่จริง คลังเมล็ดจึงยังทำงานได้ถึงมันจะหาย
-      ensureUserDoc(cred.user).catch((e) => console.error('ensureUserDoc', e));
+      ensureUserDoc(cred.user).catch((e) => console.error('ensureUserDoc', e?.code, e));
     } catch (e) {
-      if (!SILENT.has(e?.code)) setError('เข้าสู่ระบบไม่สำเร็จ ลองใหม่อีกครั้ง');
+      if (!SILENT.has(e?.code)) {
+        // ข้อความที่ผู้ใช้เห็นเป็นข้อความกลางๆ ตัว error จริงต้อง log ไว้เสมอ
+        // ไม่งั้นเวลา login พังจริงจะไม่มีอะไรให้ไล่เลย
+        console.error('signIn', e?.code, e);
+        setError('เข้าสู่ระบบไม่สำเร็จ ลองใหม่อีกครั้ง');
+      }
     }
   };
 
